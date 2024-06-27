@@ -2,7 +2,11 @@
 
 import React, { useState } from 'react';
 
-const TaskForm: React.FC = () => {
+interface TaskFormProps {
+    onSubmit: (task: { title: string; description: string; status: string }) => void;
+}
+
+const TaskForm: React.FC<TaskFormProps> = ({ onSubmit }) => {
     // State variables for task title, description, and status
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -11,7 +15,7 @@ const TaskForm: React.FC = () => {
     // Handle form submission
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // handle task submission logic here
+        onSubmit({ title, description, status });
     };
 
     return (
@@ -40,7 +44,7 @@ const TaskForm: React.FC = () => {
             </select>
 
             {/* Submit button */}
-            <button type="submit">Add Task</button>
+            <button type="submit">Save Task</button>
         </form>
     );
 };

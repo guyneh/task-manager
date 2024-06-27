@@ -19,22 +19,6 @@ body {
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 20px;
-}
-
-.profile-button {
-	background-color: #007bff;
-	color: #fff;
-	border: none;
-	border-radius: 5px;
-	padding: 10px 20px;
-	cursor: pointer;
-}
-
 .task-form {
 	display: flex;
 	flex-direction: column;
@@ -53,9 +37,6 @@ button {
 }
 
 button {
-	background-color: #28a745;
-	color: #fff;
-	border: none;
 	cursor: pointer;
 }
 
@@ -103,6 +84,21 @@ button {
 	cursor: pointer;
 }
 
+.add-task-button {
+	background-color: #28a745;
+	color: #fff;
+	border: none;
+	border-radius: 5px;
+	padding: 10px 20px;
+	cursor: pointer;
+	margin-top: 10px;
+	transition: background-color 0.3s ease;
+}
+
+.add-task-button:hover {
+	background-color: #218838;
+}
+
 header {
 	display: flex;
 	justify-content: space-between;
@@ -117,4 +113,25 @@ header {
 	border-radius: 5px;
 	padding: 10px 20px;
 	cursor: pointer;
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 20px;
+}
+
+.sign-in-button {
+	background-color: #5f6368;
+	color: #fff;
+	border: none;
+	border-radius: 5px;
+	padding: 10px 20px;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+}
+
+.sign-in-button:hover {
+	background-color: #3c4043;
 }
