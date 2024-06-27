@@ -1,4 +1,5 @@
-# Assignment Title: Full-Stack Developer Challenge
+# Full-Stack Developer Challenge
+A simple task manager that allows users to add, filter and alter tasks
 
 ## TASK: 
 -   build a simple task management app
