@@ -1,3 +1,5 @@
+// Entry point for the frontend application, renders the App component into the DOM
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
