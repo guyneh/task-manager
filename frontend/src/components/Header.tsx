@@ -2,14 +2,12 @@
 
 import React from 'react';
 
-import '../App.css';
-
 const Header: React.FC = () => {
     return (
-        <header className="header">
+        <div className="header-container">
             <h1>Task Manager</h1>
             <button className="sign-in-button">Sign In</button>
-        </header>
+        </div>
     );
 };
 

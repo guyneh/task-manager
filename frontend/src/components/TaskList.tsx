@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 
 import TaskItem from './TaskItem';
 import TaskForm from './TaskForm';
+import { FaPlus, FaEllipsisV } from 'react-icons/fa';
 
 const TaskList: React.FC = () => {
     const [tasks, setTasks] = useState([
@@ -33,7 +34,7 @@ const TaskList: React.FC = () => {
                         <th>Title</th>
                         <th>Description</th>
                         <th>Status</th>
-                        <th>Actions</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -50,7 +51,7 @@ const TaskList: React.FC = () => {
                 </tbody>
             </table>
             <button className="add-task-button" onClick={handleAddTask}>
-                {addingTask ? 'Cancel' : 'Add Task'}
+                {addingTask ? 'Cancel' : <FaPlus />}
             </button>
         </div>
     );
