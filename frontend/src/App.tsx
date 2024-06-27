@@ -9,8 +9,10 @@ import TaskList from './components/TaskList';
 const App: React.FC = () => {
 	return (
 		<div className="app-container">
-			<Header />
-			<div className="task-list-container">
+			<div className="header-container">
+				<Header />
+			</div>
+			<div className="task-list-wrapper">
 				<TaskList />
 			</div>
 		</div>

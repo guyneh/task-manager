@@ -1,49 +1,76 @@
 /* Main styles for the application */
 
 body {
-	font-family: Arial, sans-serif;
+	font-family: 'Playwrite NZ', cursive;
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
-	background-color: #f4f4f9;
+	background: linear-gradient(#f9f6d9 150px, transparent 150px) left / 100% 100%, repeating-linear-gradient(#837575 0, #837575 1px, #f9f6d9 1px, #f9f6d9 30px) left / 100% 100%;
+	background-size: 100% 100%, 100% 100%;
+	background-attachment: scroll;
+	background-color: #f9f6d9;
+	position: relative;
+	min-height: 100vh;
 }
 
-.App {
-	text-align: center;
+body::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 200px;
+	width: 2px;
+	height: 100%;
+	background-color: #e74c3c;
+	z-index: 1;
 }
 
 .app-container {
-	max-width: 800px;
-	margin: 0 auto;
-	padding: 20px;
-	background-color: #fff;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 	border-radius: 10px;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	position: relative;
+	z-index: 2;
 }
 
 .header-container {
+	width: 100%;
 	display: flex;
+	margin-top: 41px;
 	justify-content: space-between;
 	align-items: center;
-	margin-bottom: 20px;
+	position: relative;
+}
+
+.date-container {
+	font-family: 'Playwrite NZ', cursive;
+	color: #000;
+	margin-top: 15px;
+	margin-left: 16px;
 }
 
 .sign-in-button {
-	background-color: #5f6368;
-	color: #fff;
+	background-color: transparent;
+	color: #000;
+	font-family: 'Playwrite NZ', cursive;
 	border: none;
 	border-radius: 5px;
-	padding: 10px 20px;
 	cursor: pointer;
 	transition: background-color 0.3s ease;
+	margin-top: 20px;
+	margin-right: 20px;
 }
 
 .sign-in-button:hover {
-	background-color: #3c4043;
+	background-color: rgba(0, 0, 0, 0.1);
+	color: #000;
 }
 
-.task-list-container {
-	margin-top: 20px;
+.task-list-wrapper {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	margin-top: 150px;
 }
 
 .task-form {
@@ -68,7 +95,13 @@ button {
 }
 
 .task-list-container {
+	width: 100%;
+	max-width: 800px;
 	overflow-x: auto;
+	background-color: rgba(255, 255, 255, 0.85);
+	border-radius: 10px;
+	padding: 20px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .task-list {
