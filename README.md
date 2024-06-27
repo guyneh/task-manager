@@ -1,4 +1,4 @@
-# Full-Stack Developer Challenge
+# Task Manager App
 A simple task manager that allows users to add, filter and alter tasks
 
 ## TASK: 
