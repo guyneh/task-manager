@@ -31,9 +31,9 @@ const TaskList: React.FC = () => {
             <table className="task-list">
                 <thead>
                     <tr>
-                        <th>Title</th>
-                        <th>Description</th>
-                        <th>Status</th>
+                        <th className="title">Title</th>
+                        <th className="description">Description</th>
+                        <th className="status">Status</th>
                         <th></th>
                     </tr>
                 </thead>
