@@ -55,14 +55,16 @@ const TaskList: React.FC<TaskListProps> = ({ statusFilter, setStatusFilter }) =>
                             handleTaskSubmit={handleTaskSubmit}
                         />
                     ))}
-                    <tr>
-                        <td className="task-edit-button">
-                            <button className="plus-button" onClick={handleAddTask}>
-                                <FaPlus size={22} />
-                            </button>
-                        </td>
-                        <td colSpan={3}></td>
-                    </tr>
+                    {editingTaskId === null && (
+                        <tr>
+                            <td className="task-edit-button">
+                                <button className="plus-button" onClick={handleAddTask}>
+                                    <FaPlus size={22} />
+                                </button>
+                            </td>
+                            <td colSpan={3}></td>
+                        </tr>
+                    )}
                 </tbody>
             </table>
         </div>
