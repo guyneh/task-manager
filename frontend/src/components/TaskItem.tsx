@@ -1,7 +1,7 @@
 // Represents an individual task item, displaying its title, description, and status in a table row
 
-import React from 'react';
-import { FaEllipsisV } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { FaPencilAlt, FaPlus, FaTimes, FaCheck, FaTrash } from 'react-icons/fa';
 
 interface TaskItemProps {
     task: {
@@ -10,37 +10,104 @@ interface TaskItemProps {
         description: string;
         status: string;
     };
+    handleAddTask?: () => void;
+    isEditing?: boolean;
+    setEditingTask?: (id: number | null) => void;
+    handleTaskSubmit?: (task: { id: number; title: string; description: string; status: string }) => void;
 }
 
-// TaskItem component
-const TaskItem: React.FC<TaskItemProps> = ({ task }) => {
+const TaskItem: React.FC<TaskItemProps> = ({ task, handleAddTask, isEditing, setEditingTask, handleTaskSubmit }) => {
+    // State for editable task
+    const [editableTask, setEditableTask] = useState(task);
+
+    // Handle editing the task
     const handleEdit = () => {
-        // handle edit logic here
+        setEditingTask?.(task.id);
     };
 
-    const handleDelete = () => {
-        // handle delete logic here
+    // Handle changes to the editable task
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setEditableTask({ ...editableTask, [e.target.name]: e.target.value });
     };
+
+    // Handle saving or cancelling the edit of a task
+    const handleSave = () => {
+        handleTaskSubmit?.(editableTask);
+    };
+    const handleCancel = () => {
+        setEditableTask(task);
+        setEditingTask?.(null);
+    };
+
+    // Handle deleting a task
+    const handleDelete = () => {
+        handleTaskSubmit?.({ id: task.id, title: '', description: '', status: '' });
+    };    
 
     return (
-        <tr className="task-item">
-            {/* Display task title */}
-            <td>{task.title}</td>
-
-            {/* Display task description */}
-            <td>{task.description}</td>
-
-            {/* Display task status */}
-            <td>{task.status}</td>
-
-            {/* Three dots menu for actions */}
+        <tr className={`task-item ${isEditing ? 'task-item-editing' : ''}`}>
+            <td className="task-edit-button">
+                {task.title === '' && task.description === '' && task.status === '' ? (
+                    <button className="plus-button" onClick={handleAddTask}>
+                        <FaPlus size={22} />
+                    </button>
+                ) : isEditing ? (
+                    <div style={{ display: 'flex', marginLeft: '-64px', gap: '4px' }}>
+                        <button onClick={handleDelete}>
+                            <FaTrash size={20} />
+                        </button>
+                        <div style={{ borderLeft: '1px solid black', height: '22px' }}></div>
+                        <div style={{ display: 'flex' }}>
+                            <button onClick={handleSave}>
+                                <FaCheck size={22} />
+                            </button>
+                            <button onClick={handleCancel}>
+                                <FaTimes size={22} />
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <button onClick={handleEdit}>
+                        <FaPencilAlt size={22} />
+                    </button>
+                )}
+            </td>
             <td>
-                <div className="actions-menu">
-                    <FaEllipsisV onClick={() => {
-                        // Display options for edit and delete
-                    }} />
-                    {/* Implement the dropdown logic here */}
-                </div>
+                {isEditing ? (
+                    <input
+                        type="text"
+                        name="title"
+                        value={editableTask.title}
+                        onChange={handleChange}
+                        autoFocus
+                    />
+                ) : (
+                    task.title
+                )}
+            </td>
+            <td>
+                {isEditing ? (
+                    <input
+                        type="text"
+                        name="description"
+                        value={editableTask.description}
+                        onChange={handleChange}
+                    />
+                ) : (
+                    task.description
+                )}
+            </td>
+            <td>
+                {isEditing ? (
+                    <input
+                        type="text"
+                        name="status"
+                        value={editableTask.status}
+                        onChange={handleChange}
+                    />
+                ) : (
+                    task.status
+                )}
             </td>
         </tr>
     );
