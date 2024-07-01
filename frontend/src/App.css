@@ -112,7 +112,7 @@ body::before {
 	}
 }
 
-.task-item-editing input {
+.task-item-editing input, select {
 	background-color: rgba(0, 0, 0, 0.1);
 	border-radius: 5px;
 	border: transparent;

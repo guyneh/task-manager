@@ -26,7 +26,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, handleAddTask, isEditing, set
     };
 
     // Handle changes to the editable task
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setEditableTask({ ...editableTask, [e.target.name]: e.target.value });
     };
 
@@ -42,7 +42,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, handleAddTask, isEditing, set
     // Handle deleting a task
     const handleDelete = () => {
         handleTaskSubmit?.({ id: task.id, title: '', description: '', status: '' });
-    };    
+    };
 
     return (
         <tr className={`task-item ${isEditing ? 'task-item-editing' : ''}`}>
@@ -92,6 +92,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, handleAddTask, isEditing, set
                         name="description"
                         value={editableTask.description}
                         onChange={handleChange}
+                        style={{ width: '80%' }}
                     />
                 ) : (
                     task.description
@@ -99,12 +100,16 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, handleAddTask, isEditing, set
             </td>
             <td>
                 {isEditing ? (
-                    <input
-                        type="text"
+                    <select
                         name="status"
                         value={editableTask.status}
                         onChange={handleChange}
-                    />
+                        className='task-item-editing'
+                    >
+                        <option value="To Do">To Do</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Done">Done</option>
+                    </select>
                 ) : (
                     task.status
                 )}
