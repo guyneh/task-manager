@@ -19,7 +19,7 @@ const Header: React.FC = () => {
             <div className="date-container">
                 {formatDate()}
             </div>
-            <h1>Task Manager</h1>
+            <h1 className="header-title">Task Manager</h1>
             <button className="sign-in-button">Sign In</button>
         </div>
     );
