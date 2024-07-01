@@ -30,10 +30,13 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, handleAddTask, isEditing, set
         setEditableTask({ ...editableTask, [e.target.name]: e.target.value });
     };
 
-    // Handle saving or cancelling the edit of a task
+    // Handle saving the edit of a task
+    const isSaveDisabled = editableTask.title.trim() === '';
     const handleSave = () => {
         handleTaskSubmit?.(editableTask);
     };
+
+    // Handle cancelling the edit of a task
     const handleCancel = () => {
         setEditableTask(task);
         setEditingTask?.(null);
@@ -58,10 +61,10 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, handleAddTask, isEditing, set
                         </button>
                         <div style={{ borderLeft: '1px solid black', height: '22px' }}></div>
                         <div style={{ display: 'flex' }}>
-                            <button onClick={handleSave}>
+                            <button onClick={handleSave} disabled={isSaveDisabled}>
                                 <FaCheck size={22} />
                             </button>
-                            <button onClick={handleCancel}>
+                            <button onClick={handleCancel} disabled={isSaveDisabled}>
                                 <FaTimes size={22} />
                             </button>
                         </div>

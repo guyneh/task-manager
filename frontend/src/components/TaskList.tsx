@@ -5,7 +5,12 @@ import { FaPlus } from 'react-icons/fa';
 
 import TaskItem from './TaskItem';
 
-const TaskList: React.FC = () => {
+interface TaskListProps {
+    statusFilter: string;
+    setStatusFilter: (status: string) => void;
+}
+
+const TaskList: React.FC<TaskListProps> = ({ statusFilter, setStatusFilter }) => {
     // States for list of tasks and task being edited
     const [tasks, setTasks] = useState([{ id: 1, title: 'Sample Task', description: 'This is a sample task', status: 'To Do' }]);
     const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
@@ -26,6 +31,9 @@ const TaskList: React.FC = () => {
         setEditingTaskId(null);
     };
 
+    // Filter tasks based on status
+    const filteredTasks = tasks.filter(task => statusFilter === '' || task.status === statusFilter);
+
     return (
         <div>
             <table className="task-list">
@@ -38,7 +46,7 @@ const TaskList: React.FC = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {tasks.map((task) => (
+                    {filteredTasks.map((task) => (
                         <TaskItem
                             key={task.id}
                             task={task}
