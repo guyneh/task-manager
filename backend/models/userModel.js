@@ -6,8 +6,8 @@ import supabase from '../config/supabaseClient.js';
 export const isValidReferralCode = async (referralCode) => {
     const { data, error } = await supabase
         .from('referrals')
-        .select('code')
-        .eq('code', referralCode);
+        .select('referral_name')
+        .eq('referral_code', referralCode);
     if (error) throw error;
     return data.length > 0;
 };
@@ -18,7 +18,12 @@ export const createUser = async (email, password) => {
         email: email,
         password: password,
     });
-    if (error) throw error;
+
+    if (error) {
+        console.error("Error creating user:", error);
+        throw new Error('Database error saving new user');
+    }
+    
     return data;
 };
 
