@@ -7,9 +7,9 @@ export const checkAccess = async (req, res) => {
     const { accessCode } = req.body;
 
     try {
-        const referralName = await isValidAccessCode(accessCode);
-        if (referralName) {
-            res.status(200).json({ referral_name: referralName });
+        const accessName = await isValidAccessCode(accessCode);
+        if (accessName) {
+            res.status(200).json({ access_name: accessName });
         } else {
             res.status(400).json({ error: 'Invalid access code' });
         }

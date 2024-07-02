@@ -11,12 +11,12 @@ export const isValidEmail = (email) => {
 // Check if the access code is valid
 export const isValidAccessCode = async (accessCode) => {
     const { data, error } = await supabase
-        .from('referrals')
-        .select('referral_name')
-        .eq('referral_code', accessCode)
+        .from('access')
+        .select('access_name')
+        .eq('access_code', accessCode)
         .single();
     if (error) throw error;
-    return data ? data.referral_name : null;
+    return data ? data.access_name : null;
 };
 
 // Create a new user

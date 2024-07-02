@@ -41,9 +41,9 @@ const Auth: React.FC<AuthProps> = ({ onClose }) => {
         setErrorMessage('');
         try {
             const response = await checkAccessCode(formData.accessCode);
-            if (response.referral_name) {
+            if (response.access_name) {
                 setIsAccessValid(true);
-                setAccessText(`Code found for: ${response.referral_name}`);
+                setAccessText(`Code found for: ${response.access_name}`);
             } else {
                 setIsAccessValid(false);
                 setAccessText('Invalid access code');

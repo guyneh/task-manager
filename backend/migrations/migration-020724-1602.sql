@@ -26,16 +26,16 @@ FOR EACH ROW
 EXECUTE PROCEDURE public.handle_new_user();
 
 
----------- REFERRALS --------
--- Referrals table with the required code to access the application
-CREATE TABLE IF NOT EXISTS referrals (
-    referral_id SERIAL PRIMARY KEY,
-    referral_name VARCHAR(255),
-    referral_code CHAR(6) CHECK (referral_code ~ '^[A-Z0-9]{6}$')
+---------- ACCESS CODES --------
+-- Access table with the required code to access the application
+CREATE TABLE IF NOT EXISTS access (
+    access_id SERIAL PRIMARY KEY,
+    access_name VARCHAR(255),
+    access_code CHAR(6) CHECK (access_code ~ '^[A-Z0-9]{6}$')
 );
 
--- Function to generate a referral code (6 characters long, letters and numbers only, uppercase)
-CREATE OR REPLACE FUNCTION generate_referral_code() RETURNS TEXT AS $$
+-- Function to generate a access code (6 characters long, letters and numbers only, uppercase)
+CREATE OR REPLACE FUNCTION generate_access_code() RETURNS TEXT AS $$
 DECLARE
     chars TEXT := 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     result TEXT := '';
@@ -48,19 +48,19 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Trigger function to set the referral code when a new referral is created
-CREATE OR REPLACE FUNCTION set_referral_code() RETURNS TRIGGER AS $$
+-- Trigger function to set the access code when a new access is created
+CREATE OR REPLACE FUNCTION set_access_code() RETURNS TRIGGER AS $$
 BEGIN
-    NEW.referral_code := generate_referral_code();
+    NEW.access_code := generate_access_code();
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
--- Trigger for the referrals table
-CREATE TRIGGER before_insert_referrals
-BEFORE INSERT ON referrals
+-- Trigger for the access table
+CREATE TRIGGER before_insert_access
+BEFORE INSERT ON access
 FOR EACH ROW
-EXECUTE FUNCTION set_referral_code();
+EXECUTE FUNCTION set_access_code();
 
 
 -------- TASKS --------
