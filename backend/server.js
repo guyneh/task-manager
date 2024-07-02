@@ -3,6 +3,7 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
+import fileUpload from 'express-fileupload';
 import taskRoutes from './routes/taskRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 
@@ -15,6 +16,7 @@ const PORT = process.env.PORT || 5001;
 
 // Middleware for parsing JSON data in the request body
 app.use(express.json());
+app.use(fileUpload());
 
 // CORS condiguration (allow cookies to be sent with requests)
 app.use(cors({

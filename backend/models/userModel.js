@@ -27,6 +27,9 @@ export const createUser = async (email, password) => {
     });
 
     if (error) {
+        if (error.code === 'user_already_exists') {
+            throw new Error('Email already registered');
+        }
         console.error("Error creating user:", error);
         throw new Error('Database error saving new user');
     }
@@ -41,5 +44,20 @@ export const authenticateUser = async (email, password) => {
         password: password,
     });
     if (error) throw error;
+    return data;
+};
+
+// Update user profile row
+export const updateUser = async (email, name, profilePicturePath) => {
+    const { data, error } = await supabase
+        .from('users')
+        .update({ name: name, profile_picture: profilePicturePath })
+        .eq('email', email);
+
+    if (error) {
+        console.error("Error updating profile:", error);
+        throw new Error('Error updating profile information');
+    }
+
     return data;
 };

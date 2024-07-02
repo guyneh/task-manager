@@ -1,6 +1,6 @@
 // Controllers for user authentication (intermediary between routes and models)
 
-import { isValidEmail, isValidAccessCode, createUser, authenticateUser } from '../models/userModel.js';
+import { isValidEmail, isValidAccessCode, createUser, authenticateUser, updateUser } from '../models/userModel.js';
 
 // Check Access Code Handler
 export const checkAccess = async (req, res) => {
@@ -51,5 +51,29 @@ export const signIn = async (req, res) => {
         res.status(200).json(user);
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+};
+
+// Update Profile Handler
+export const updateProfile = async (req, res) => {
+    const { email, name } = req.body;
+    const profilePicture = req.files?.profilePicture;
+
+    try {
+        let profilePicturePath = '';
+        if (profilePicture) {
+            const { data, error } = await supabase.storage.from('profiles').upload(`public/${email}/profile_picture`, profilePicture.data, {
+                contentType: profilePicture.mimetype,
+            });
+
+            if (error) throw error;
+            profilePicturePath = data.path;
+        }
+
+        await updateUser(email, name, profilePicturePath);
+        res.status(200).json({ message: 'Profile updated successfully' });
+    } catch (error) {
+        console.error("Error updating profile:", error);
+        res.status(500).json({ error: 'Error updating profile information' });
     }
 };

@@ -15,7 +15,9 @@ const Auth: React.FC<AuthProps> = ({ onClose }) => {
     const [isAccessStep, setIsAccessStep] = useState(true);
     const [isAccessValid, setIsAccessValid] = useState(false);
     const [accessText, setAccessText] = useState('');
-    const [formData, setFormData] = useState({ accessCode: '', email: '', password: '', confirmPassword: '' });
+    const [formData, setFormData] = useState({ accessCode: '', email: '', password: '', confirmPassword: '', name: '', profilePicture: '' });
+    const [isProfileStep, setIsProfileStep] = useState(false);
+    const [profilePicture, setProfilePicture] = useState<File | null>(null);
 
     // Clear error message after 5 seconds
     useEffect(() => {
@@ -27,7 +29,12 @@ const Auth: React.FC<AuthProps> = ({ onClose }) => {
 
     // Handle changes to the form data
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value, files } = e.target;
+        if (name === 'profilePicture' && files) {
+            setProfilePicture(files[0]);
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
     };
 
     // Validate email format
@@ -59,6 +66,29 @@ const Auth: React.FC<AuthProps> = ({ onClose }) => {
         setIsAccessStep(false);
     };
 
+    // Handle profile step continuation
+    const handleProfileContinue = async () => {
+        try {
+            const formDataToSend = new FormData();
+            formDataToSend.append('email', formData.email);
+            formDataToSend.append('name', formData.name);
+            if (profilePicture) {
+                formDataToSend.append('profilePicture', profilePicture);
+            }
+            const response = await fetch('/api/auth/update-profile', {
+                method: 'POST',
+                body: formDataToSend,
+            });
+
+            if (!response.ok) {
+                throw new Error('Error updating profile information');
+            }
+            onClose();
+        } catch (error) {
+            setErrorMessage("Error updating profile information.");
+        }
+    };
+
     // Handle signing in or signing up
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -82,14 +112,15 @@ const Auth: React.FC<AuthProps> = ({ onClose }) => {
                     setErrorMessage(response.error);
                     return;
                 }
+                setIsProfileStep(true);
             } else {
                 const response = await signIn(formData);
                 if (response.error) {
                     setErrorMessage(response.error);
                     return;
                 }
+                onClose();
             }
-            onClose();
         } catch (error) {
             setErrorMessage("An unexpected error occurred.");
         }
@@ -142,7 +173,7 @@ const Auth: React.FC<AuthProps> = ({ onClose }) => {
                             </button>
                         </>
                     )}
-                    {isSignUp && !isAccessStep && (
+                    {isSignUp && !isAccessStep && !isProfileStep && (
                         <>
                             <label className="auth-label">
                                 Email:
@@ -180,6 +211,35 @@ const Auth: React.FC<AuthProps> = ({ onClose }) => {
                             {errorMessage && <p className="auth-error">{errorMessage}</p>}
                             <button className="auth-button" type="submit">
                                 Sign Up
+                            </button>
+                        </>
+                    )}
+                    {isSignUp && !isAccessStep && isProfileStep && (
+                        <>
+                            <label className="auth-label">
+                                Name:
+                                <input
+                                    className="auth-input"
+                                    type="text"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </label>
+                            <label className="auth-label">
+                                Profile Picture:
+                                <input
+                                    className="auth-input"
+                                    type="file"
+                                    name="profilePicture"
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </label>
+                            {errorMessage && <p className="auth-error">{errorMessage}</p>}
+                            <button className="auth-button" type="button" onClick={handleProfileContinue}>
+                                Save Profile
                             </button>
                         </>
                     )}
