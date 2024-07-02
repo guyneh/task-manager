@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 5001;
 // Middleware for parsing JSON data in the request body
 app.use(express.json());
 
-// CORS condiguration
+// CORS condiguration (allow cookies to be sent with requests)
 app.use(cors({
     origin: 'http://localhost:3000',
     credentials: true,
@@ -26,6 +26,12 @@ app.use(cors({
 // Routes for API endpoints
 app.use('/api', taskRoutes);
 app.use('/auth', authRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
 
 // Start the server and listen on the specified port
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
