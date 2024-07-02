@@ -1,7 +1,7 @@
 // Defines routes for task-related API endpoints, mapping HTTP requests to the corresponding controller functions
 
 import express from 'express';
-import { getTasks, createTask, updateTask, deleteTask } from '../controllers/taskController';
+import { getTasks, createTask, updateTask, deleteTask } from '../controllers/taskController.js';
 
 const router = express.Router();
 

@@ -1,6 +1,6 @@
 // Controller functions for handling task-related requests, interacting with the Supabase client to perform CRUD operations
 
-import supabase from '../config/supabaseClient';
+import supabase from '../config/supabaseClient.js';
 
 // Retrieve all tasks from the database
 export const getTasks = async (req, res) => {

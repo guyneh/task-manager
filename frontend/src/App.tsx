@@ -20,7 +20,7 @@ const App: React.FC = () => {
 				</div>
 			</div>
 			<div className="task-list-container">
-				<TaskList statusFilter={statusFilter} setStatusFilter={setStatusFilter} />
+				<TaskList statusFilter={statusFilter} />
 			</div>
 		</div>
 	);

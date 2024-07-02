@@ -1,16 +1,15 @@
 // Displays a list of tasks in a table format, mapping through the tasks array and rendering TaskItem components
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaPlus } from 'react-icons/fa';
 
 import TaskItem from './TaskItem';
 
 interface TaskListProps {
     statusFilter: string;
-    setStatusFilter: (status: string) => void;
 }
 
-const TaskList: React.FC<TaskListProps> = ({ statusFilter, setStatusFilter }) => {
+const TaskList: React.FC<TaskListProps> = ({ statusFilter }) => {
     // States for list of tasks and task being edited
     const [tasks, setTasks] = useState([{ id: 1, title: 'Sample Task', description: 'This is a sample task', status: 'To Do' }]);
     const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
