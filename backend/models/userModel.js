@@ -2,14 +2,21 @@
 
 import supabase from '../config/supabaseClient.js';
 
-// Check if the referral code is valid
-export const isValidReferralCode = async (referralCode) => {
+// Helper function to validate email
+export const isValidEmail = (email) => {
+    const re = /\S+@\S+\.\S+/;
+    return re.test(email);
+};
+
+// Check if the access code is valid
+export const isValidAccessCode = async (accessCode) => {
     const { data, error } = await supabase
         .from('referrals')
         .select('referral_name')
-        .eq('referral_code', referralCode);
+        .eq('referral_code', accessCode)
+        .single();
     if (error) throw error;
-    return data.length > 0;
+    return data ? data.referral_name : null;
 };
 
 // Create a new user
@@ -23,7 +30,7 @@ export const createUser = async (email, password) => {
         console.error("Error creating user:", error);
         throw new Error('Database error saving new user');
     }
-    
+
     return data;
 };
 

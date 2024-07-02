@@ -26,3 +26,15 @@ export const signIn = async (formData) => {
     });
     return response.json();
 };
+
+// Checks if the access code is valid
+export const checkAccessCode = async (accessCode) => {
+    const response = await fetch(`${API_URL}/check-access`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ accessCode }),
+    });
+    return response.json();
+};

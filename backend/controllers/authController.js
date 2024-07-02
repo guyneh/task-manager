@@ -1,22 +1,32 @@
 // Controllers for user authentication (intermediary between routes and models)
 
-import { isValidReferralCode, createUser, authenticateUser } from '../models/userModel.js';
+import { isValidEmail, isValidAccessCode, createUser, authenticateUser } from '../models/userModel.js';
 
-// Helper function to validate email
-const validateEmail = (email) => {
-    const re = /\S+@\S+\.\S+/;
-    return re.test(email);
+// Check Access Code Handler
+export const checkAccess = async (req, res) => {
+    const { accessCode } = req.body;
+
+    try {
+        const referralName = await isValidAccessCode(accessCode);
+        if (referralName) {
+            res.status(200).json({ referral_name: referralName });
+        } else {
+            res.status(400).json({ error: 'Invalid access code' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 };
 
 // Sign Up Handler
 export const signUp = async (req, res) => {
-    const { referralCode, email, password, confirmPassword } = req.body;
+    const { email, password, confirmPassword } = req.body;
 
     if (password !== confirmPassword) {
         return res.status(400).json({ error: 'Passwords do not match' });
     }
 
-    if (!validateEmail(email)) {
+    if (!isValidEmail(email)) {
         return res.status(400).json({ error: 'Invalid email address' });
     }
 
@@ -25,11 +35,6 @@ export const signUp = async (req, res) => {
     }
 
     try {
-        const isValid = await isValidReferralCode(referralCode);
-        if (!isValid) {
-            return res.status(400).json({ error: 'Invalid referral code' });
-        }
-
         const user = await createUser(email, password);
         res.status(201).json(user);
     } catch (error) {
