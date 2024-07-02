@@ -1,6 +1,7 @@
 // Modal that pops up to allow a user to sign in or sign up
 
 import React, { useState } from 'react';
+import { signIn, signUp } from '../api/auth';
 
 interface AuthProps {
     onClose: () => void;
@@ -11,7 +12,7 @@ const Auth: React.FC<AuthProps> = ({ onClose }) => {
     const [isSignUp, setIsSignUp] = useState(false);
     const [formData, setFormData] = useState({
         referralCode: '',
-        username: '',
+        email: '',
         password: '',
         confirmPassword: ''
     });
@@ -21,10 +22,26 @@ const Auth: React.FC<AuthProps> = ({ onClose }) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    // Validate email format
+    const validateEmail = (email: string) => {
+        const re = /\S+@\S+\.\S+/;
+        return re.test(email);
+    };
+
     // Handle signing in or signing up
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log(formData);
+        if (!validateEmail(formData.email)) {
+            alert("Invalid email address");
+            return;
+        }
+        if (isSignUp) {
+            const response = await signUp(formData);
+            console.log(response);
+        } else {
+            const response = await signIn(formData);
+            console.log(response);
+        }
         onClose();
     };
 
@@ -60,12 +77,12 @@ const Auth: React.FC<AuthProps> = ({ onClose }) => {
                         </label>
                     )}
                     <label className="auth-label">
-                        Username:
+                        Email:
                         <input
                             className="auth-input"
-                            type="text"
-                            name="username"
-                            value={formData.username}
+                            type="email"
+                            name="email"
+                            value={formData.email}
                             onChange={handleChange}
                             required
                         />

@@ -1,4 +1,4 @@
-// Frontend functions to interact with the backend API
+// Frontend functions to interact with the backend API for tasks
 
 // Backend URL
 const BASE_URL = 'http://localhost:5001/api';
