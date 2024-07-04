@@ -4,8 +4,8 @@ import React from 'react';
 
 import './App.css';
 import Header from './components/Header';
-import TaskList from './components/TaskList';
-import Filter from './components/Filter';
+import TaskList from './components/tasks/TaskList';
+import Filter from './components/tasks/Filter';
 
 const App: React.FC = () => {
 	// States to manage the filter component

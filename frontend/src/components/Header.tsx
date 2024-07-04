@@ -1,10 +1,10 @@
 // Header component with Task Manager title and Sign In button
 
 import React, { useEffect, useState } from 'react';
-import Auth from './AuthModal';
+import Auth from './auth/AuthModal';
 import { useAuth } from '../context/AuthContext';
-import ProfileModal from './ProfileModal';
-import ProfilePicture from './ProfilePicture';
+import ProfileModal from './auth/ProfileModal';
+import ProfilePicture from './auth/ProfilePicture';
 
 // Format today's date as a string
 const formatDate = (): string => {

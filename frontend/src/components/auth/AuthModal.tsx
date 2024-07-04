@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { FaArrowRight } from 'react-icons/fa';
-import { signIn, signUp, checkAccessCode } from '../api/auth';
-import { useAuth } from '../context/AuthContext';
+import { signIn, signUp, checkAccessCode } from '../../api/auth';
+import { useAuth } from '../../context/AuthContext';
 
 interface AuthProps {
     onClose: () => void;
