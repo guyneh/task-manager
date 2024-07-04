@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaArrowRight } from 'react-icons/fa';
 import { signIn, signUp, checkAccessCode } from '../api/auth';
+import { useAuth } from '../context/AuthContext';
 
 interface AuthProps {
     onClose: () => void;
@@ -10,14 +11,13 @@ interface AuthProps {
 
 const Auth: React.FC<AuthProps> = ({ onClose }) => {
     // States for sign in or sign up
+    const { signIn: contextSignIn } = useAuth();
     const [isSignUp, setIsSignUp] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [isAccessStep, setIsAccessStep] = useState(true);
     const [isAccessValid, setIsAccessValid] = useState(false);
     const [accessText, setAccessText] = useState('');
-    const [formData, setFormData] = useState({ accessCode: '', email: '', password: '', confirmPassword: '', name: '', profilePicture: '' });
-    const [isProfileStep, setIsProfileStep] = useState(false);
-    const [profilePicture, setProfilePicture] = useState<File | null>(null);
+    const [formData, setFormData] = useState({ accessCode: '', email: '', password: '', confirmPassword: '', name: '', avatar: '' });
 
     // Clear error message after 5 seconds
     useEffect(() => {
@@ -29,12 +29,9 @@ const Auth: React.FC<AuthProps> = ({ onClose }) => {
 
     // Handle changes to the form data
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value, files } = e.target;
-        if (name === 'profilePicture' && files) {
-            setProfilePicture(files[0]);
-        } else {
-            setFormData({ ...formData, [name]: value });
-        }
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+
     };
 
     // Validate email format
@@ -66,33 +63,12 @@ const Auth: React.FC<AuthProps> = ({ onClose }) => {
         setIsAccessStep(false);
     };
 
-    // Handle profile step continuation
-    const handleProfileContinue = async () => {
-        try {
-            const formDataToSend = new FormData();
-            formDataToSend.append('email', formData.email);
-            formDataToSend.append('name', formData.name);
-            if (profilePicture) {
-                formDataToSend.append('profilePicture', profilePicture);
-            }
-            const response = await fetch('/api/auth/update-profile', {
-                method: 'POST',
-                body: formDataToSend,
-            });
-
-            if (!response.ok) {
-                throw new Error('Error updating profile information');
-            }
-            onClose();
-        } catch (error) {
-            setErrorMessage("Error updating profile information.");
-        }
-    };
-
     // Handle signing in or signing up
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setErrorMessage('');
+
+        // Validate the email and password length (and matching passwords for sign up)
         if (!validateEmail(formData.email)) {
             setErrorMessage("Invalid email address");
             return;
@@ -105,6 +81,8 @@ const Auth: React.FC<AuthProps> = ({ onClose }) => {
             setErrorMessage("Passwords do not match");
             return;
         }
+
+        // Sign in or sign up API calls
         try {
             if (isSignUp) {
                 const response = await signUp(formData);
@@ -112,13 +90,18 @@ const Auth: React.FC<AuthProps> = ({ onClose }) => {
                     setErrorMessage(response.error);
                     return;
                 }
-                setIsProfileStep(true);
+                onClose();
             } else {
                 const response = await signIn(formData);
+
                 if (response.error) {
                     setErrorMessage(response.error);
                     return;
                 }
+                // Update auth context with user and token
+                const { user } = response;
+                const { id, email, created_at, user_metadata: { name } } = user;
+                contextSignIn({ id, email, created_at, name }, response.session);
                 onClose();
             }
         } catch (error) {
@@ -173,7 +156,7 @@ const Auth: React.FC<AuthProps> = ({ onClose }) => {
                             </button>
                         </>
                     )}
-                    {isSignUp && !isAccessStep && !isProfileStep && (
+                    {isSignUp && !isAccessStep && (
                         <>
                             <label className="auth-label">
                                 Email:
@@ -211,35 +194,6 @@ const Auth: React.FC<AuthProps> = ({ onClose }) => {
                             {errorMessage && <p className="auth-error">{errorMessage}</p>}
                             <button className="auth-button" type="submit">
                                 Sign Up
-                            </button>
-                        </>
-                    )}
-                    {isSignUp && !isAccessStep && isProfileStep && (
-                        <>
-                            <label className="auth-label">
-                                Name:
-                                <input
-                                    className="auth-input"
-                                    type="text"
-                                    name="name"
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </label>
-                            <label className="auth-label">
-                                Profile Picture:
-                                <input
-                                    className="auth-input"
-                                    type="file"
-                                    name="profilePicture"
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </label>
-                            {errorMessage && <p className="auth-error">{errorMessage}</p>}
-                            <button className="auth-button" type="button" onClick={handleProfileContinue}>
-                                Save Profile
                             </button>
                         </>
                     )}

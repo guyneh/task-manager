@@ -71,6 +71,24 @@ body::before {
 	background-color: rgba(0, 0, 0, 0.1);
 }
 
+.profile-picture-container {
+	text-align: center;
+	margin-top: -20px;
+}
+
+.profile-picture {
+	border-radius: 50%;
+	margin-right: 10px;
+	vertical-align: middle;
+	cursor: pointer;
+}
+
+.user-info {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
 .auth-modal {
 	position: fixed;
 	top: 0;
@@ -157,6 +175,11 @@ body::before {
 	cursor: pointer;
 	margin-top: 10px;
 	border-radius: 5px;
+}
+
+.auth-button-red {
+	background-color: red;
+	color: white;
 }
 
 .auth-button:hover {

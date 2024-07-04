@@ -40,13 +40,13 @@ export const checkAccessCode = async (accessCode) => {
 };
 
 // Updates the user profile
-export const updateProfile = async (email, name, profilePicturePath) => {
+export const updateProfile = async (email, name, avatarPath) => {
     const response = await fetch('/api/auth/update-profile', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, name, profilePicturePath }),
+        body: JSON.stringify({ email, name, avatarPath }),
     });
 
     return response.json();

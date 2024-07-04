@@ -44,14 +44,45 @@ export const authenticateUser = async (email, password) => {
         password: password,
     });
     if (error) throw error;
-    return data;
+
+    const user_id = data.user.id;
+    const { data: userDetails, error: userError } = await supabase
+        .from('users')
+        .select('name, created_at, avatar')
+        .eq('user_id', user_id)
+        .single();
+
+    if (userError) throw userError;
+
+    return { ...data, user: { ...data.user, ...userDetails } };
+};
+
+// Retrieves a user's avatar from the 'avatars' bucket and returns the URL
+export const getAvatarUrl = async (user_id) => {
+    // Check if the file exists in the storage bucket
+    const { data: fileList, error: listError } = await supabase
+        .storage
+        .from('avatars')
+        .list(`${user_id}`, { limit: 1 });
+
+    // If there is an error listing the files or the file doesn't exist, return the default avatar URL
+    if (listError || fileList.length === 0) {
+        return "https://zymglqnjkxnnfmfojyug.supabase.co/storage/v1/object/public/default_avatar/avatar.png?t=2024-07-04T21%3A30%3A39.738Z";
+    }
+
+    // Now attempt to download the avatar
+    const { data, error } = await supabase.storage.from('avatars').download(`${user_id}/avatar.png`);
+    if (error) throw error;
+
+    const avatarUrl = URL.createObjectURL(data);
+    return avatarUrl;
 };
 
 // Update user profile row
-export const updateUser = async (email, name, profilePicturePath) => {
+export const updateUser = async (email, name, avatarPath) => {
     const { data, error } = await supabase
         .from('users')
-        .update({ name: name, profile_picture: profilePicturePath })
+        .update({ name: name, profile_picture: avatarPath })
         .eq('email', email);
 
     if (error) {

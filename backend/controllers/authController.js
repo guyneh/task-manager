@@ -1,6 +1,6 @@
 // Controllers for user authentication (intermediary between routes and models)
 
-import { isValidEmail, isValidAccessCode, createUser, authenticateUser, updateUser } from '../models/userModel.js';
+import { isValidEmail, isValidAccessCode, createUser, authenticateUser, updateUser, getAvatarUrl } from '../models/userModel.js';
 
 // Check Access Code Handler
 export const checkAccess = async (req, res) => {
@@ -48,8 +48,11 @@ export const signIn = async (req, res) => {
 
     try {
         const user = await authenticateUser(email, password);
+        const avatarUrl = await getAvatarUrl(user.user.id);
+        user.user.avatar = avatarUrl;
         res.status(200).json(user);
     } catch (error) {
+        console.error("Error during sign-in process:", error);
         res.status(500).json({ error: error.message });
     }
 };
@@ -57,20 +60,20 @@ export const signIn = async (req, res) => {
 // Update Profile Handler
 export const updateProfile = async (req, res) => {
     const { email, name } = req.body;
-    const profilePicture = req.files?.profilePicture;
+    const avatar = req.files?.avatar;
 
     try {
-        let profilePicturePath = '';
-        if (profilePicture) {
-            const { data, error } = await supabase.storage.from('profiles').upload(`public/${email}/profile_picture`, profilePicture.data, {
-                contentType: profilePicture.mimetype,
+        let avatarPath = '';
+        if (avatar) {
+            const { data, error } = await supabase.storage.from('avatars').upload(`public/${email}/profile_picture`, avatar.data, {
+                contentType: avatar.mimetype,
             });
 
             if (error) throw error;
-            profilePicturePath = data.path;
+            avatarPath = data.path;
         }
 
-        await updateUser(email, name, profilePicturePath);
+        await updateUser(email, name, avatarPath);
         res.status(200).json({ message: 'Profile updated successfully' });
     } catch (error) {
         console.error("Error updating profile:", error);
