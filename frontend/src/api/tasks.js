@@ -3,18 +3,23 @@
 // Backend URL
 const BASE_URL = 'http://localhost:5001/api';
 
-// Fetch all tasks
-export const fetchTasks = async () => {
-    const response = await fetch(`${BASE_URL}/tasks`);
+// Fetch all tasks for the current user
+export const fetchTasks = async (token) => {
+    const response = await fetch(`${BASE_URL}/tasks`, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+    });
     return await response.json();
 };
 
 // Create a new task
-export const createTask = async (task) => {
+export const createTask = async (task, token) => {
     const response = await fetch(`${BASE_URL}/tasks`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(task),
     });
@@ -22,11 +27,12 @@ export const createTask = async (task) => {
 };
 
 // Update a task
-export const updateTask = async (id, task) => {
+export const updateTask = async (id, task, token) => {
     const response = await fetch(`${BASE_URL}/tasks/${id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(task),
     });
@@ -34,8 +40,11 @@ export const updateTask = async (id, task) => {
 };
 
 // Delete a task
-export const deleteTask = async (id) => {
+export const deleteTask = async (id, token) => {
     await fetch(`${BASE_URL}/tasks/${id}`, {
         method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
     });
 };

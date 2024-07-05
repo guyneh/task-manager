@@ -65,13 +65,12 @@ EXECUTE FUNCTION set_access_code();
 
 -------- TASKS --------
 -- Tasks table to store user tasks
-CREATE TABLE IF NOT EXISTS tasks (
-    task_id SERIAL PRIMARY KEY,
-    user_id UUID NOT NULL,
-    title VARCHAR(255) NOT NULL,
+CREATE TABLE tasks (
+    task_id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id UUID REFERENCES users(user_id),
+    title TEXT NOT NULL,
     description TEXT,
-    status VARCHAR(50) NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (user_id) REFERENCES profiles (user_id) ON DELETE CASCADE
+    status TEXT CHECK (status IN ('To Do', 'In Progress', 'Done')),
+    created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ DEFAULT now()
 );

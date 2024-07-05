@@ -5,15 +5,15 @@ import { FaPencilAlt, FaPlus, FaTimes, FaCheck, FaTrash } from 'react-icons/fa';
 
 interface TaskItemProps {
     task: {
-        id: number;
+        task_id: string;
         title: string;
         description: string;
         status: string;
     };
     handleAddTask?: () => void;
     isEditing?: boolean;
-    setEditingTask?: (id: number | null) => void;
-    handleTaskSubmit?: (task: { id: number; title: string; description: string; status: string }) => void;
+    setEditingTask?: (id: string | null) => void;
+    handleTaskSubmit?: (task: { task_id: string; title: string; description: string; status: string }) => void;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({ task, handleAddTask, isEditing, setEditingTask, handleTaskSubmit }) => {
@@ -22,7 +22,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, handleAddTask, isEditing, set
 
     // Handle editing the task
     const handleEdit = () => {
-        setEditingTask?.(task.id);
+        setEditingTask?.(task.task_id);
     };
 
     // Handle changes to the editable task
@@ -44,7 +44,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, handleAddTask, isEditing, set
 
     // Handle deleting a task
     const handleDelete = () => {
-        handleTaskSubmit?.({ id: task.id, title: '', description: '', status: '' });
+        handleTaskSubmit?.({ task_id: task.task_id, title: '', description: '', status: '' });
     };
 
     return (
@@ -64,7 +64,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, handleAddTask, isEditing, set
                             <button onClick={handleSave} disabled={isSaveDisabled}>
                                 <FaCheck size={22} />
                             </button>
-                            <button onClick={handleCancel} disabled={isSaveDisabled}>
+                            <button onClick={handleCancel}>
                                 <FaTimes size={22} />
                             </button>
                         </div>

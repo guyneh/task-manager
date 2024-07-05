@@ -2,30 +2,53 @@
 
 import React, { useState, useEffect } from 'react';
 import { FaPlus } from 'react-icons/fa';
-
+import { useAuth } from '../../context/AuthContext';
+import { fetchTasks, createTask, updateTask, deleteTask } from '../../api/tasks';
 import TaskItem from './TaskItem';
+
+interface Task {
+    task_id: string;
+    title: string;
+    description: string;
+    status: string;
+}
 
 interface TaskListProps {
     statusFilter: string;
 }
 
 const TaskList: React.FC<TaskListProps> = ({ statusFilter }) => {
-    // States for list of tasks and task being edited
-    const [tasks, setTasks] = useState([{ id: 1, title: 'Sample Task', description: 'This is a sample task', status: 'To Do' }]);
-    const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
+    const { authState } = useAuth();
+    const [tasks, setTasks] = useState<Task[]>([]);
+    const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+
+    // Fetch tasks when the component mounts
+    useEffect(() => {
+        const getTasks = async () => {
+            if (authState.session) {
+                const tasks = await fetchTasks(authState.session.access_token);
+                setTasks(tasks);
+            }
+        };
+        getTasks();
+    }, [authState]);
 
     // Toggle the add task form
-    const handleAddTask = () => {
-        setEditingTaskId(tasks.length + 1);
-        setTasks([...tasks, { id: tasks.length + 1, title: '', description: '', status: 'To Do' }]);
+    const handleAddTask = async () => {
+        const newTask: Partial<Task> = { title: '', description: '', status: 'To Do' };
+        const createdTask = await createTask(newTask, authState.session.access_token);
+        setTasks([...tasks, createdTask]);
+        setEditingTaskId(createdTask.task_id);
     };
 
     // Handle task submission
-    const handleTaskSubmit = (updatedTask: { id: number; title: string; description: string; status: string }) => {
+    const handleTaskSubmit = async (updatedTask: Task) => {
         if (updatedTask.title === '' && updatedTask.description === '' && updatedTask.status === '') {
-            setTasks(tasks.filter(task => task.id !== updatedTask.id));
+            await deleteTask(updatedTask.task_id, authState.session.access_token);
+            setTasks(tasks.filter(task => task.task_id !== updatedTask.task_id));
         } else {
-            setTasks(tasks.map(task => (task.id === updatedTask.id ? updatedTask : task)));
+            await updateTask(updatedTask.task_id, updatedTask, authState.session.access_token);
+            setTasks(tasks.map(task => (task.task_id === updatedTask.task_id ? updatedTask : task)));
         }
         setEditingTaskId(null);
     };
@@ -47,9 +70,9 @@ const TaskList: React.FC<TaskListProps> = ({ statusFilter }) => {
                 <tbody>
                     {filteredTasks.map((task) => (
                         <TaskItem
-                            key={task.id}
+                            key={task.task_id}
                             task={task}
-                            isEditing={editingTaskId === task.id}
+                            isEditing={editingTaskId === task.task_id}
                             setEditingTask={setEditingTaskId}
                             handleTaskSubmit={handleTaskSubmit}
                         />
