@@ -41,13 +41,31 @@ export const checkAccessCode = async (accessCode) => {
 
 // Updates the user profile
 export const updateProfile = async (email, name, avatarPath) => {
-    const response = await fetch('/api/auth/update-profile', {
+    const response = await fetch(`${API_URL}/update-profile`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, name, avatarPath }),
     });
+
+    return response.json();
+};
+
+// Uploads the user's avatar
+export const uploadAvatar = async (user_id, avatar) => {
+    const formData = new FormData();
+    formData.append('user_id', user_id);
+    formData.append('avatar', avatar);
+
+    const response = await fetch(`${API_URL}/upload-avatar`, {
+        method: 'POST',
+        body: formData,
+    });
+
+    if (!response.ok) {
+        throw new Error('Error uploading avatar');
+    }
 
     return response.json();
 };

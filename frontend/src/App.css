@@ -177,13 +177,36 @@ body::before {
 	border-radius: 5px;
 }
 
+.auth-button:hover {
+	background: #b38b2e;
+}
+
 .auth-button-red {
 	background-color: red;
 	color: white;
+	border: none;
+	border-radius: 5px;
+	padding: 10px 20px;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
 }
 
-.auth-button:hover {
-	background: #b38b2e;
+.auth-button-red:hover {
+	background-color: darkred;
+}
+
+.auth-button-green {
+	background-color: green;
+	color: white;
+	border: none;
+	border-radius: 5px;
+	padding: 10px 20px;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+}
+
+.auth-button-green:hover {
+	background-color: darkgreen;
 }
 
 .auth-error {

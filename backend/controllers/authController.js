@@ -59,24 +59,37 @@ export const signIn = async (req, res) => {
 
 // Update Profile Handler
 export const updateProfile = async (req, res) => {
-    const { email, name } = req.body;
-    const avatar = req.files?.avatar;
+    const { user_id, name, avatarPath } = req.body;
 
     try {
-        let avatarPath = '';
-        if (avatar) {
-            const { data, error } = await supabase.storage.from('avatars').upload(`public/${email}/profile_picture`, avatar.data, {
-                contentType: avatar.mimetype,
-            });
-
-            if (error) throw error;
-            avatarPath = data.path;
-        }
-
-        await updateUser(email, name, avatarPath);
+        await updateUser(user_id, name, avatarPath);
         res.status(200).json({ message: 'Profile updated successfully' });
     } catch (error) {
         console.error("Error updating profile:", error);
         res.status(500).json({ error: 'Error updating profile information' });
+    }
+};
+
+// Upload avatar to storage
+export const uploadAvatar = async (req, res) => {
+    const user_id = req.body.user_id;
+    const avatar = req.files?.avatar;
+
+    if (!user_id || !avatar) {
+        return res.status(400).json({ error: 'User ID and avatar file are required' });
+    }
+
+    try {
+        const { data, error } = await supabase.storage.from('avatars').upload(`${user_id}/avatar.png`, avatar.data, {
+            contentType: avatar.mimetype,
+            upsert: true
+        });
+
+        if (error) throw error;
+
+        res.status(200).json({ path: data.path });
+    } catch (error) {
+        console.error("Error uploading avatar:", error);
+        res.status(500).json({ error: 'Error uploading avatar' });
     }
 };

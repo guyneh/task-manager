@@ -79,11 +79,11 @@ export const getAvatarUrl = async (user_id) => {
 };
 
 // Update user profile row
-export const updateUser = async (email, name, avatarPath) => {
+export const updateUser = async (user_id, name, avatarPath) => {
     const { data, error } = await supabase
         .from('users')
-        .update({ name: name, profile_picture: avatarPath })
-        .eq('email', email);
+        .update({ name: name, avatar: avatarPath })
+        .eq('user_id', user_id);
 
     if (error) {
         console.error("Error updating profile:", error);
