@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import ProfilePicture from './ProfilePicture';
 import { updateProfile, updateAvatar, retrieveAvatar } from '../../api/auth';
+import Loading from '../Loading';
 
 interface ProfileModalProps {
     onClose: () => void;
@@ -11,6 +12,7 @@ interface ProfileModalProps {
 
 const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
     const { authState, signOut, updateUser } = useAuth();
+    const [loading, setLoading] = useState(false);
     const [name, setName] = useState(authState?.user?.name || '');
     const [avatar, setAvatar] = useState<File | null>(null);
     const [avatarUrl, setAvatarUrl] = useState<string>(authState?.user?.avatar || 'avatar.png');
@@ -54,20 +56,28 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
     // Handle profile update
     const handleSave = async () => {
         try {
+            setLoading(true); // Set loading state to true
             // If a new avatar is provided, upload it first
             if (avatar) {
                 const uploadData = await updateAvatar(authState?.user?.id || '', avatar);
                 setAvatarUrl(uploadData.path);
                 updateUser({ avatar: uploadData.path });
+
+                // Update the database table with the new avatar URL
+                await updateProfile(authState?.user?.id || '', name, uploadData.path);
+            } else {
+                // Update the database table without changing the avatar URL
+                await updateProfile(authState?.user?.id || '', name, avatarUrl);
             }
 
-            // Update the database table and local auth state
-            await updateProfile(authState?.user?.id || '', name, avatarUrl);
-            updateUser({ name });
+            // Update local auth state
+            updateUser({ name, avatar: avatar ? avatarUrl : authState?.user?.avatar });
 
             onClose();
         } catch (error) {
             console.error("Error updating profile information:", error);
+        } finally {
+            setLoading(false); // Set loading state to false
         }
     };
 
@@ -80,55 +90,61 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
     return (
         <div className="auth-modal" onClick={onClose}>
             <div className="auth-modal-content" onClick={(e) => e.stopPropagation()}>
-                <h2>Profile</h2>
-                <label className="auth-label">
-                    Email:
-                    <input
-                        className="auth-input"
-                        type="text"
-                        name="email"
-                        value={authState?.user?.email || ''}
-                        disabled
-                    />
-                </label>
-                <label className="auth-label">
-                    Name:
-                    <input
-                        className="auth-input"
-                        type="text"
-                        name="name"
-                        value={name}
-                        onChange={handleNameChange}
-                    />
-                </label>
-                <label className="auth-label">
-                    Avatar:
-                    <div style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
-                        <ProfilePicture avatarUrl={avatarUrl || "avatar.png"} size={100} />
-                        <input
-                            type="file"
-                            accept="image/*"
-                            style={{
-                                position: 'absolute',
-                                top: 0,
-                                left: 0,
-                                width: '100%',
-                                height: '100%',
-                                opacity: 0,
-                                cursor: 'pointer',
-                            }}
-                            onChange={handleAvatarChange}
-                        />
-                    </div>
-                </label>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <button className="auth-button auth-button-red" onClick={handleLogout}>
-                        Log Out
-                    </button>
-                    <button className="auth-button auth-button-green" onClick={handleSave}>
-                        Save
-                    </button>
-                </div>
+                {loading ? (
+                    <Loading />
+                ) : (
+                    <>
+                        <h2>Profile</h2>
+                        <label className="auth-label">
+                            Email:
+                            <input
+                                className="auth-input"
+                                type="text"
+                                name="email"
+                                value={authState?.user?.email || ''}
+                                disabled
+                            />
+                        </label>
+                        <label className="auth-label">
+                            Name:
+                            <input
+                                className="auth-input"
+                                type="text"
+                                name="name"
+                                value={name}
+                                onChange={handleNameChange}
+                            />
+                        </label>
+                        <label className="auth-label">
+                            Avatar:
+                            <div style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
+                                <ProfilePicture avatarUrl={avatarUrl || "avatar.png"} size={100} />
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    style={{
+                                        position: 'absolute',
+                                        top: 0,
+                                        left: 0,
+                                        width: '100%',
+                                        height: '100%',
+                                        opacity: 0,
+                                        cursor: 'pointer',
+                                    }}
+                                    onChange={handleAvatarChange}
+                                />
+                            </div>
+                        </label>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <button className="auth-button auth-button-red" onClick={handleLogout}>
+                                Log Out
+                            </button>
+                            <button className="auth-button auth-button-green" onClick={handleSave}>
+                                Save
+                            </button>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );

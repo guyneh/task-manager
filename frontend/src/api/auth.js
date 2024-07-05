@@ -81,5 +81,5 @@ export const retrieveAvatar = async (userId) => {
     }
 
     const data = await response.json();
-    return data;
+    return data.avatarUrl.publicUrl;
 };

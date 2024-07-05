@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { FaArrowRight } from 'react-icons/fa';
-import { signIn, signUp, checkAccessCode } from '../../api/auth';
+import { signIn, signUp, checkAccessCode, retrieveAvatar } from '../../api/auth';
 import { useAuth } from '../../context/AuthContext';
+import Loading from '../Loading';
 
 interface AuthProps {
     onClose: () => void;
@@ -12,6 +13,7 @@ interface AuthProps {
 const Auth: React.FC<AuthProps> = ({ onClose }) => {
     // States for sign in or sign up
     const { signIn: contextSignIn } = useAuth();
+    const [loading, setLoading] = useState(false);
     const [isSignUp, setIsSignUp] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [isAccessStep, setIsAccessStep] = useState(true);
@@ -84,10 +86,12 @@ const Auth: React.FC<AuthProps> = ({ onClose }) => {
 
         // Sign in or sign up API calls
         try {
+            setLoading(true);
             if (isSignUp) {
                 const response = await signUp(formData);
                 if (response.error) {
                     setErrorMessage(response.error);
+                    setLoading(false);
                     return;
                 }
                 onClose();
@@ -96,138 +100,151 @@ const Auth: React.FC<AuthProps> = ({ onClose }) => {
 
                 if (response.error) {
                     setErrorMessage(response.error);
+                    setLoading(false);
                     return;
                 }
+
+                // Fetch avatar URL
+                const avatarUrl = await retrieveAvatar(response.user.id);
+
                 // Update auth context with user and token
                 const { user } = response;
                 const { id, email, created_at, user_metadata: { name } } = user;
-                contextSignIn({ id, email, created_at, name }, response.session);
+                contextSignIn({ id, email, created_at, name, avatar: avatarUrl }, response.session);
                 onClose();
             }
         } catch (error) {
             setErrorMessage("An unexpected error occurred.");
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <div className="auth-modal" onClick={onClose}>
             <div className="auth-modal-content" onClick={(e) => e.stopPropagation()}>
-                <div className="auth-tabs">
-                    <button
-                        className={`auth-tab ${!isSignUp ? 'active' : ''}`}
-                        onClick={() => setIsSignUp(false)}
-                    >
-                        Sign In
-                    </button>
-                    <button
-                        className={`auth-tab ${isSignUp ? 'active' : ''}`}
-                        onClick={() => setIsSignUp(true)}
-                    >
-                        Sign Up
-                    </button>
-                </div>
-                <form className="auth-form" onSubmit={handleSubmit}>
-                    {isSignUp && isAccessStep && (
-                        <>
-                            <label className="auth-label">
-                                Access Code:
-                                <div className="auth-access">
-                                    <input
-                                        className="auth-input auth-input-access"
-                                        type="text"
-                                        name="accessCode"
-                                        value={formData.accessCode}
-                                        onChange={handleChange}
-                                        disabled={isAccessValid}
-                                    />
-                                    <button type="button" className="access-check-button" onClick={handleCheckAccessCode}>
-                                        <FaArrowRight />
-                                    </button>
-                                </div>
-                            </label>
-                            <p className={`auth-access-text ${isAccessValid ? 'success' : 'error'}`}>{accessText}</p>
+                {loading ? (
+                    <Loading />
+                ) : (
+                    <>
+                        <div className="auth-tabs">
                             <button
-                                type="button"
-                                className={`auth-button ${!isAccessValid ? 'disabled' : ''}`}
-                                onClick={handleContinue}
-                                disabled={!isAccessValid}
+                                className={`auth-tab ${!isSignUp ? 'active' : ''}`}
+                                onClick={() => setIsSignUp(false)}
                             >
-                                Continue
-                            </button>
-                        </>
-                    )}
-                    {isSignUp && !isAccessStep && (
-                        <>
-                            <label className="auth-label">
-                                Email:
-                                <input
-                                    className="auth-input"
-                                    type="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </label>
-                            <label className="auth-label">
-                                Password:
-                                <input
-                                    className="auth-input"
-                                    type="password"
-                                    name="password"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </label>
-                            <label className="auth-label">
-                                Confirm Password:
-                                <input
-                                    className="auth-input"
-                                    type="password"
-                                    name="confirmPassword"
-                                    value={formData.confirmPassword}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </label>
-                            {errorMessage && <p className="auth-error">{errorMessage}</p>}
-                            <button className="auth-button" type="submit">
-                                Sign Up
-                            </button>
-                        </>
-                    )}
-                    {!isSignUp && (
-                        <>
-                            <label className="auth-label">
-                                Email:
-                                <input
-                                    className="auth-input"
-                                    type="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </label>
-                            <label className="auth-label">
-                                Password:
-                                <input
-                                    className="auth-input"
-                                    type="password"
-                                    name="password"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </label>
-                            {errorMessage && <p className="auth-error">{errorMessage}</p>}
-                            <button className="auth-button" type="submit">
                                 Sign In
                             </button>
-                        </>
-                    )}
-                </form>
+                            <button
+                                className={`auth-tab ${isSignUp ? 'active' : ''}`}
+                                onClick={() => setIsSignUp(true)}
+                            >
+                                Sign Up
+                            </button>
+                        </div>
+                        <form className="auth-form" onSubmit={handleSubmit}>
+                            {isSignUp && isAccessStep && (
+                                <>
+                                    <label className="auth-label">
+                                        Access Code:
+                                        <div className="auth-access">
+                                            <input
+                                                className="auth-input auth-input-access"
+                                                type="text"
+                                                name="accessCode"
+                                                value={formData.accessCode}
+                                                onChange={handleChange}
+                                                disabled={isAccessValid}
+                                            />
+                                            <button type="button" className="access-check-button" onClick={handleCheckAccessCode}>
+                                                <FaArrowRight />
+                                            </button>
+                                        </div>
+                                    </label>
+                                    <p className={`auth-access-text ${isAccessValid ? 'success' : 'error'}`}>{accessText}</p>
+                                    <button
+                                        type="button"
+                                        className={`auth-button ${!isAccessValid ? 'disabled' : ''}`}
+                                        onClick={handleContinue}
+                                        disabled={!isAccessValid}
+                                    >
+                                        Continue
+                                    </button>
+                                </>
+                            )}
+                            {isSignUp && !isAccessStep && (
+                                <>
+                                    <label className="auth-label">
+                                        Email:
+                                        <input
+                                            className="auth-input"
+                                            type="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </label>
+                                    <label className="auth-label">
+                                        Password:
+                                        <input
+                                            className="auth-input"
+                                            type="password"
+                                            name="password"
+                                            value={formData.password}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </label>
+                                    <label className="auth-label">
+                                        Confirm Password:
+                                        <input
+                                            className="auth-input"
+                                            type="password"
+                                            name="confirmPassword"
+                                            value={formData.confirmPassword}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </label>
+                                    {errorMessage && <p className="auth-error">{errorMessage}</p>}
+                                    <button className="auth-button" type="submit">
+                                        Sign Up
+                                    </button>
+                                </>
+                            )}
+                            {!isSignUp && (
+                                <>
+                                    <label className="auth-label">
+                                        Email:
+                                        <input
+                                            className="auth-input"
+                                            type="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </label>
+                                    <label className="auth-label">
+                                        Password:
+                                        <input
+                                            className="auth-input"
+                                            type="password"
+                                            name="password"
+                                            value={formData.password}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </label>
+                                    {errorMessage && <p className="auth-error">{errorMessage}</p>}
+                                    <button className="auth-button" type="submit">
+                                        Sign In
+                                    </button>
+                                </>
+                            )}
+                        </form>
+                    </>
+                )}
             </div>
         </div>
     );
