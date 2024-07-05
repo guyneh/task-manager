@@ -114,13 +114,27 @@ export const updateUser = async (userId, name, avatarPath) => {
 
 // Delete the existing avatar from storage
 export const deleteExistingAvatar = async (userId) => {
+    // List files in the user's avatar directory
+    const { data: fileList, error: listError } = await supabaseAdmin
+        .storage
+        .from('avatars')
+        .list(`${userId}`);
+
+    // If there's an error or no files are found, return without deleting
+    if (listError || fileList.length === 0) {
+        return;
+    }
+
+    // Remove all files in the user's avatar directory
+    const filePaths = fileList.map(file => `${userId}/${file.name}`);
     const { data, error } = await supabaseAdmin
         .storage
         .from('avatars')
-        .remove([`${userId}/avatar.png`]);
+        .remove(filePaths);
 
     if (error) throw error;
 };
+
 
 // Upload user avatar
 export const uploadUserAvatar = async (userId, avatar) => {

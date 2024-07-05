@@ -19,7 +19,6 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
     useEffect(() => {
         const fetchAvatar = async () => {
             if (authState?.user?.id) {
-                console.log(authState)
                 try {
                     const response = await retrieveAvatar(authState.user.id);
                     const avatarUrl = response.avatarUrl.publicUrl;
