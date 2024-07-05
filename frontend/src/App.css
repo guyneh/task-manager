@@ -7,17 +7,29 @@ body {
 	background-color: #f9f6d9;
 	min-height: 100vh;
 	display: grid;
+	position: relative;
 }
 
 body::before {
 	content: '';
-	position: absolute;
+	position: fixed;
 	top: 0;
 	left: 200px;
 	width: 2px;
 	height: 100%;
 	background-color: #e74c3c;
 	z-index: 1;
+}
+
+body::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 200px;
+    width: 2px;
+    height: 100%;
+    background-color: #e74c3c;
+    z-index: 1;
 }
 
 .loading-spinner {
@@ -34,16 +46,6 @@ body::before {
 	width: 20px;
 	height: 20px;
 	animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-	0% {
-		transform: rotate(0deg);
-	}
-
-	100% {
-		transform: rotate(360deg);
-	}
 }
 
 .app-container {
@@ -349,6 +351,7 @@ body::before {
 	width: 85%;
 	margin-top: 54.5px;
 	padding-left: 150px;
+	padding-bottom: 200px;
 }
 
 .task-list {
@@ -441,5 +444,15 @@ select {
 	.task-list th.description,
 	.task-list th.status {
 		font-size: 16px;
+	}
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(360deg);
 	}
 }
