@@ -91,6 +91,7 @@ export const getAvatarUrl = async (user_id) => {
 
 // Update user profile row
 export const updateUser = async (user_id, name, avatarPath) => {
+    console.log("Updating user profile with:", user_id, name, avatarPath);
     const { data, error } = await supabase
         .from('users')
         .update({ name: name, avatar: avatarPath })

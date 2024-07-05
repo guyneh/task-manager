@@ -1,6 +1,6 @@
 // Header component with Task Manager title and Sign In button
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Auth from './auth/AuthModal';
 import { useAuth } from '../context/AuthContext';
 import ProfileModal from './auth/ProfileModal';

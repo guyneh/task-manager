@@ -40,22 +40,22 @@ export const checkAccessCode = async (accessCode) => {
 };
 
 // Updates the user profile
-export const updateProfile = async (email, name, avatarPath) => {
+export const updateProfile = async (userId, name, avatarPath) => {
     const response = await fetch(`${API_URL}/update-profile`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, name, avatarPath }),
+        body: JSON.stringify({ userId, name, avatarPath }),
     });
 
     return response.json();
 };
 
 // Uploads the user's avatar
-export const uploadAvatar = async (user_id, avatar) => {
+export const uploadAvatar = async (userId, avatar) => {
     const formData = new FormData();
-    formData.append('user_id', user_id);
+    formData.append('user_id', userId);
     formData.append('avatar', avatar);
 
     const response = await fetch(`${API_URL}/upload-avatar`, {

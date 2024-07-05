@@ -59,10 +59,10 @@ export const signIn = async (req, res) => {
 
 // Update Profile Handler
 export const updateProfile = async (req, res) => {
-    const { user_id, name, avatarPath } = req.body;
+    const { userId, name, avatarPath } = req.body;
 
     try {
-        await updateUser(user_id, name, avatarPath);
+        await updateUser(userId, name, avatarPath);
         res.status(200).json({ message: 'Profile updated successfully' });
     } catch (error) {
         console.error("Error updating profile:", error);

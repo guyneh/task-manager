@@ -10,7 +10,7 @@ interface ProfileModalProps {
 }
 
 const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
-    const { authState, signOut } = useAuth();
+    const { authState, signOut, updateUser } = useAuth();
     const [name, setName] = useState(authState?.user?.name || '');
     const [avatar, setAvatar] = useState<File | null>(null);
 
@@ -43,12 +43,14 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
                 avatarPath = uploadData.path;
             }
 
-            const response = await updateProfile(authState?.user?.email || '', name, avatarPath);
+            const response = await updateProfile(authState?.user?.id || '', name, avatarPath);
 
             if (response.error) {
                 throw new Error(response.error);
             }
 
+            // Update the local auth state and close the modal
+            updateUser({ name, avatar: avatarPath });
             onClose();
         } catch (error) {
             console.error("Error updating profile information:", error);

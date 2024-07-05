@@ -19,6 +19,7 @@ interface AuthContextProps {
     authState: AuthState;
     signIn: (user: User, session: string) => void;
     signOut: () => void;
+    updateUser: (updatedUser: Partial<User>) => void;
 }
 
 interface AuthProviderProps {
@@ -55,9 +56,23 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setAuthState({ user: null, session: null });
     };
 
+    // Function to update the user state
+    const updateUser = (updatedUser: Partial<User>) => {
+        setAuthState(prevState => {
+            if (!prevState.user) return prevState;
+
+            const updatedUserState: User = {
+                ...prevState.user,
+                ...updatedUser
+            };
+            localStorage.setItem('user', JSON.stringify(updatedUserState));
+            return { ...prevState, user: updatedUserState };
+        });
+    };
+
     // Provide authState and auth actions to children components
     return (
-        <AuthContext.Provider value={{ authState, signIn, signOut }}>
+        <AuthContext.Provider value={{ authState, signIn, signOut, updateUser }}>
             {children}
         </AuthContext.Provider>
     );
