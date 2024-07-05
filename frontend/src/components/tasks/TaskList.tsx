@@ -18,7 +18,7 @@ interface TaskListProps {
 }
 
 const TaskList: React.FC<TaskListProps> = ({ statusFilter }) => {
-    const { authState } = useAuth();
+    const { authState, refreshAccessToken } = useAuth();
     const [tasks, setTasks] = useState<Task[]>([]);
     const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
 
@@ -29,12 +29,27 @@ const TaskList: React.FC<TaskListProps> = ({ statusFilter }) => {
         }
     }, [authState]);
 
+    // Helper function to fetch tasks with token refresh
+    const getTasksWithTokenRefresh = async () => {
+        try {
+            const tasks = await fetchTasks(authState.session.access_token);
+            setTasks(tasks);
+        } catch (error) {
+            if (error instanceof Error && error.message === 'Failed to fetch tasks') {
+                await refreshAccessToken();
+                const tasks = await fetchTasks(authState.session.access_token);
+                setTasks(tasks);
+            } else {
+                console.error('Error fetching tasks:', error);
+            }
+        }
+    };
+
     // Fetch tasks when the component mounts
     useEffect(() => {
         const getTasks = async () => {
             if (authState.session) {
-                const tasks = await fetchTasks(authState.session.access_token);
-                setTasks(tasks);
+                await getTasksWithTokenRefresh();
             }
         };
         getTasks();
@@ -121,3 +136,7 @@ const TaskList: React.FC<TaskListProps> = ({ statusFilter }) => {
 };
 
 export default TaskList;
+
+function refreshAccessToken() {
+    throw new Error('Function not implemented.');
+}

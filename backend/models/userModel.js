@@ -69,6 +69,22 @@ export const authenticateUser = async (email, password) => {
     };
 };
 
+// Refresh User Token
+export const refreshUserToken = async (refresh_token) => {
+    try {
+        const { data, error } = await supabase.auth.refreshSession({ refresh_token });
+
+        if (error) {
+            throw new Error('Invalid or expired refresh token');
+        }
+
+        return data;
+    } catch (error) {
+        console.error('Error refreshing token:', error);
+        throw error;
+    }
+};
+
 // Retrieves a user's avatar URL from the 'avatars' bucket
 export const getUserAvatar = async (userId) => {
     try {

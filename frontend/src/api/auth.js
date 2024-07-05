@@ -27,6 +27,23 @@ export const signIn = async (formData) => {
     return response.json();
 };
 
+// Refreshes the user's access token
+export const refreshToken = async (refreshToken) => {
+    const response = await fetch(`${API_URL}/refresh-token`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to refresh token');
+    }
+
+    return response.json();
+};
+
 // Checks if the access code is valid
 export const checkAccessCode = async (accessCode) => {
     const response = await fetch(`${API_URL}/check-access`, {

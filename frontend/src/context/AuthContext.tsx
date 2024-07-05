@@ -1,6 +1,7 @@
 // Contains the authentication context and custom hook for managing and accessing authentication state throughout the application
 
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
+import { refreshToken } from '../api/auth';
 
 interface User {
     id: string;
@@ -17,9 +18,10 @@ interface AuthState {
 
 interface AuthContextProps {
     authState: AuthState;
-    signIn: (user: User, session: string) => void;
+    signIn: (user: User, session: any) => void;
     signOut: () => void;
     updateUser: (updatedUser: Partial<User>) => void;
+    refreshAccessToken: () => Promise<void>;
 }
 
 interface AuthProviderProps {
@@ -69,10 +71,32 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             return { ...prevState, user: updatedUserState };
         });
     };
+    
+    // Function to refresh the access token
+    const refreshAccessToken = async () => {
+        try {
+            const data = await refreshToken(authState.session.refresh_token);
+            setAuthState({
+                ...authState,
+                session: {
+                    ...authState.session,
+                    access_token: data.access_token,
+                    refresh_token: data.refresh_token,
+                },
+            });
+            localStorage.setItem('session', JSON.stringify({
+                access_token: data.access_token,
+                refresh_token: data.refresh_token,
+            }));
+        } catch (error) {
+            console.error('Error refreshing token:', error);
+            signOut();
+        }
+    };
 
     // Provide authState and auth actions to children components
     return (
-        <AuthContext.Provider value={{ authState, signIn, signOut, updateUser }}>
+        <AuthContext.Provider value={{ authState, signIn, signOut, updateUser, refreshAccessToken }}>
             {children}
         </AuthContext.Provider>
     );

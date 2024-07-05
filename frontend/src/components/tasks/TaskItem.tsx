@@ -1,10 +1,11 @@
 // Represents an individual task item, displaying its title, description, and status in a table row
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaPencilAlt, FaTimes, FaCheck, FaTrash } from 'react-icons/fa';
 import { createTask } from '../../api/tasks';
 import { useAuth } from '../../context/AuthContext';
 import { Task } from './TaskList';
+import ExpandedTextBox from './ExpandedTextBox';
 
 interface TaskItemProps {
     task: {
@@ -24,6 +25,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isEditing, setEditingTask, ha
     // State for editable task
     const { authState } = useAuth();
     const [editableTask, setEditableTask] = useState(task);
+    const [showFullText, setShowFullText] = useState<{ field: string; value: string; top: number; left: number }>({ field: '', value: '', top: 0, left: 0 });
 
     // Handle editing the task
     const handleEdit = () => {
@@ -73,73 +75,127 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isEditing, setEditingTask, ha
         handleTaskSubmit?.({ task_id: task.task_id, title: '', description: '', status: '' });
     };
 
+    // Handle expanding and collapsing the text
+    const handleExpandText = (field: string, value: string, top: number, left: number) => {
+        setShowFullText({ field, value, top, left });
+    };
+    const handleCollapseText = () => {
+        setShowFullText({ field: '', value: '', top: 0, left: 0 });
+    };
+
+    useEffect(() => {
+        const handleClickOutside = () => {
+            handleCollapseText();
+        };
+
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, []);
+
     return (
-        <tr className={`task-item ${isEditing ? 'task-item-editing' : ''}`}>
-            <td className="task-edit-button">
-                {isEditing ? (
-                    <div style={{ display: 'flex', marginLeft: '-64px', gap: '4px' }}>
-                        <button onClick={handleDelete} disabled={task.task_id.startsWith('temp-')}>
-                            <FaTrash size={20} />
-                        </button>
-                        <div style={{ borderLeft: '1px solid black', height: '22px' }}></div>
-                        <div style={{ display: 'flex' }}>
-                            <button onClick={handleSave} disabled={isSaveDisabled}>
-                                <FaCheck size={22} />
+        <>
+            {showFullText.field && (
+                <div
+                    className="expanded-textbox"
+                    style={{ top: showFullText.top, left: showFullText.left }}
+                    onClick={handleCollapseText}
+                >
+                    {showFullText.value}
+                </div>
+            )}
+            <tr className={`task-item ${isEditing ? 'task-item-editing' : ''}`}>
+                <td className="task-edit-button">
+                    {isEditing ? (
+                        <div style={{ display: 'flex', marginLeft: '-64px', gap: '4px' }}>
+                            <button onClick={handleDelete} disabled={task.task_id.startsWith('temp-')}>
+                                <FaTrash size={20} />
                             </button>
-                            <button onClick={handleCancel}>
-                                <FaTimes size={22} />
-                            </button>
+                            <div style={{ borderLeft: '1px solid black', height: '22px' }}></div>
+                            <div style={{ display: 'flex' }}>
+                                <button onClick={handleSave} disabled={isSaveDisabled}>
+                                    <FaCheck size={22} />
+                                </button>
+                                <button onClick={handleCancel}>
+                                    <FaTimes size={22} />
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                ) : (
-                    <button onClick={handleEdit}>
-                        <FaPencilAlt size={22} />
-                    </button>
-                )}
-            </td>
-            <td>
-                {isEditing ? (
-                    <input
-                        type="text"
-                        name="title"
-                        value={editableTask.title}
-                        onChange={handleChange}
-                        autoFocus
-                    />
-                ) : (
-                    task.title
-                )}
-            </td>
-            <td>
-                {isEditing ? (
-                    <input
-                        type="text"
-                        name="description"
-                        value={editableTask.description}
-                        onChange={handleChange}
-                        style={{ width: '80%' }}
-                    />
-                ) : (
-                    task.description
-                )}
-            </td>
-            <td>
-                {isEditing ? (
-                    <select
-                        name="status"
-                        value={editableTask.status}
-                        onChange={handleChange}
-                        className='task-item-editing'
-                    >
-                        <option value="To Do">To Do</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Done">Done</option>
-                    </select>
-                ) : (
-                    task.status
-                )}
-            </td>
-        </tr>
+                    ) : (
+                        <button onClick={handleEdit}>
+                            <FaPencilAlt size={22} />
+                        </button>
+                    )}
+                </td>
+                <td className="truncate expandable">
+                    {isEditing ? (
+                        <input
+                            type="text"
+                            name="title"
+                            value={editableTask.title}
+                            onChange={handleChange}
+                            autoFocus
+                            onClick={(e) => {
+                                if (editableTask.title.length > 20) {
+                                    const rect = (e.target as HTMLElement).getBoundingClientRect();
+                                    handleExpandText('title', editableTask.title, rect.top, rect.right);
+                                }
+                                e.stopPropagation();
+                            }}
+                        />
+                    ) : (
+                        <span onClick={(e) => {
+                            const rect = (e.target as HTMLElement).getBoundingClientRect();
+                            handleExpandText('title', task.title, rect.top, rect.right);
+                        }}>
+                            {task.title}
+                        </span>
+                    )}
+                </td>
+                <td className="truncate expandable">
+                    {isEditing ? (
+                        <input
+                            type="text"
+                            name="description"
+                            value={editableTask.description}
+                            onChange={handleChange}
+                            style={{ width: '80%' }}
+                            onClick={(e) => {
+                                if (editableTask.description.length > 20) {
+                                    const rect = (e.target as HTMLElement).getBoundingClientRect();
+                                    handleExpandText('description', editableTask.description, rect.top, rect.right);
+                                }
+                                e.stopPropagation();
+                            }}
+                        />
+                    ) : (
+                        <span onClick={(e) => {
+                            const rect = (e.target as HTMLElement).getBoundingClientRect();
+                            handleExpandText('description', task.description, rect.top, rect.right);
+                        }}>
+                            {task.description}
+                        </span>
+                    )}
+                </td>
+                <td>
+                    {isEditing ? (
+                        <select
+                            name="status"
+                            value={editableTask.status}
+                            onChange={handleChange}
+                            className='task-item-editing'
+                        >
+                            <option value="To Do">To Do</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Done">Done</option>
+                        </select>
+                    ) : (
+                        task.status
+                    )}
+                </td>
+            </tr>
+        </>
     );
 };
 

@@ -22,14 +22,14 @@ body::before {
 }
 
 body::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 200px;
-    width: 2px;
-    height: 100%;
-    background-color: #e74c3c;
-    z-index: 1;
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 200px;
+	width: 2px;
+	height: 100%;
+	background-color: #e74c3c;
+	z-index: 1;
 }
 
 .loading-spinner {
@@ -383,10 +383,45 @@ body::after {
 
 .task-item {
 	border-bottom: 7px solid transparent;
+}
 
-	&:editing {
-		background-color: #e0f7fa;
-	}
+.task-item input {
+	width: 150px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.task-item .expanded-textbox {
+	position: absolute;
+	z-index: 10;
+	background-color: #fffacd;
+	border: 1px solid black;
+	padding: 5px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	width: 200px;
+	border-radius: 10px;
+	white-space: normal;
+	word-wrap: break-word;
+}
+
+.task-item::editing {
+	background-color: #e0f7fa;
+}
+
+.task-item .truncate {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.task-item .expandable {
+	cursor: pointer;
+}
+
+.task-item .expanded {
+	white-space: normal;
+	word-wrap: break-word;
 }
 
 .task-item-editing input,

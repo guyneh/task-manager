@@ -1,6 +1,6 @@
 // Controllers for user authentication (intermediary between routes and models)
 
-import { isValidEmail, isValidAccessCode, createUser, authenticateUser, updateUser, uploadUserAvatar, getUserAvatar } from '../models/userModel.js';
+import { isValidEmail, isValidAccessCode, createUser, authenticateUser, updateUser, uploadUserAvatar, getUserAvatar, refreshUserToken } from '../models/userModel.js';
 
 // Check Access Code Handler
 export const checkAccess = async (req, res) => {
@@ -52,6 +52,21 @@ export const signIn = async (req, res) => {
     } catch (error) {
         console.error("Error during sign-in process:", error);
         res.status(500).json({ error: error.message });
+    }
+};
+
+// Refresh Token Handler
+export const refreshToken = async (req, res) => {
+    const { refresh_token } = req.body;
+
+    try {
+        const { data, error } = await refreshUserToken(refresh_token);
+        if (error) {
+            return res.status(401).json({ error: 'Invalid or expired refresh token' });
+        }
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error: 'Error refreshing token' });
     }
 };
 
