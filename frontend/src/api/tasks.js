@@ -3,14 +3,17 @@
 // Backend URL
 const BASE_URL = 'http://localhost:5001/api';
 
-// Fetch all tasks for the current user
+// Fetch all tasks for the current user via the token
 export const fetchTasks = async (token) => {
     const response = await fetch(`${BASE_URL}/tasks`, {
+        method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
         },
     });
-    return await response.json();
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
 };
 
 // Create a new task
@@ -19,7 +22,7 @@ export const createTask = async (task, token) => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            'Authorization': token,
         },
         body: JSON.stringify(task),
     });
@@ -32,7 +35,7 @@ export const updateTask = async (id, task, token) => {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            'Authorization': token,
         },
         body: JSON.stringify(task),
     });
@@ -44,7 +47,7 @@ export const deleteTask = async (id, token) => {
     await fetch(`${BASE_URL}/tasks/${id}`, {
         method: 'DELETE',
         headers: {
-            'Authorization': `Bearer ${token}`,
+            'Authorization': token,
         },
     });
 };

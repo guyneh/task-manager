@@ -74,6 +74,9 @@ export const updateAvatar = async (userId, avatar) => {
 export const retrieveAvatar = async (userId) => {
     const response = await fetch(`${API_URL}/retrieve-avatar/${userId}`, {
         method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
     });
 
     if (!response.ok) {

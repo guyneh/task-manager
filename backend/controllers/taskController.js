@@ -21,7 +21,7 @@ export const createTask = async (req, res) => {
     const { data, error } = await supabase
         .from('tasks')
         .insert([{ title, description, status, user_id }]);
-        
+
     if (error) return res.status(500).json({ error });
     res.status(201).json(data);
 };

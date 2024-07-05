@@ -37,8 +37,10 @@ const TaskList: React.FC<TaskListProps> = ({ statusFilter }) => {
     const handleAddTask = async () => {
         const newTask: Partial<Task> = { title: '', description: '', status: 'To Do' };
         const createdTask = await createTask(newTask, authState.session.access_token);
-        setTasks([...tasks, createdTask]);
-        setEditingTaskId(createdTask.task_id);
+        if (createdTask) {
+            setTasks([...tasks, createdTask]);
+            setEditingTaskId(createdTask.task_id);
+        }
     };
 
     // Handle task submission
