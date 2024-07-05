@@ -5,7 +5,6 @@ import { FaPencilAlt, FaTimes, FaCheck, FaTrash } from 'react-icons/fa';
 import { createTask } from '../../api/tasks';
 import { useAuth } from '../../context/AuthContext';
 import { Task } from './TaskList';
-import ExpandedTextBox from './ExpandedTextBox';
 
 interface TaskItemProps {
     task: {
@@ -77,12 +76,13 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isEditing, setEditingTask, ha
 
     // Handle expanding and collapsing the text
     const handleExpandText = (field: string, value: string, top: number, left: number) => {
-        setShowFullText({ field, value, top, left });
+        setShowFullText({ field, value, top: top + window.scrollY, left });
     };
     const handleCollapseText = () => {
         setShowFullText({ field: '', value: '', top: 0, left: 0 });
     };
 
+    // Close the expanded text box when clicking outside
     useEffect(() => {
         const handleClickOutside = () => {
             handleCollapseText();
@@ -105,7 +105,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isEditing, setEditingTask, ha
                     {showFullText.value}
                 </div>
             )}
-            <tr className={`task-item ${isEditing ? 'task-item-editing' : ''}`}>
+            <tr className={`task-item ${isEditing ? 'task-item-editing' : ''}`} onClick={(e) => e.stopPropagation()}>
                 <td className="task-edit-button">
                     {isEditing ? (
                         <div style={{ display: 'flex', marginLeft: '-64px', gap: '4px' }}>
@@ -135,12 +135,11 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isEditing, setEditingTask, ha
                             name="title"
                             value={editableTask.title}
                             onChange={handleChange}
+                            className="truncate"
                             autoFocus
                             onClick={(e) => {
-                                if (editableTask.title.length > 20) {
-                                    const rect = (e.target as HTMLElement).getBoundingClientRect();
-                                    handleExpandText('title', editableTask.title, rect.top, rect.right);
-                                }
+                                const rect = (e.target as HTMLElement).getBoundingClientRect();
+                                handleExpandText('title', editableTask.title, rect.top, rect.left);
                                 e.stopPropagation();
                             }}
                         />
@@ -160,12 +159,10 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isEditing, setEditingTask, ha
                             name="description"
                             value={editableTask.description}
                             onChange={handleChange}
-                            style={{ width: '80%' }}
+                            className="truncate"
                             onClick={(e) => {
-                                if (editableTask.description.length > 20) {
-                                    const rect = (e.target as HTMLElement).getBoundingClientRect();
-                                    handleExpandText('description', editableTask.description, rect.top, rect.right);
-                                }
+                                const rect = (e.target as HTMLElement).getBoundingClientRect();
+                                handleExpandText('description', editableTask.description, rect.top, rect.left);
                                 e.stopPropagation();
                             }}
                         />

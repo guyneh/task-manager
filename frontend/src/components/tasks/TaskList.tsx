@@ -136,7 +136,3 @@ const TaskList: React.FC<TaskListProps> = ({ statusFilter }) => {
 };
 
 export default TaskList;
-
-function refreshAccessToken() {
-    throw new Error('Function not implemented.');
-}

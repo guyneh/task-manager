@@ -366,15 +366,21 @@ body::after {
 }
 
 .task-list th.title {
-	width: 30%;
+	width: 25%;
 }
 
 .task-list th.description {
-	width: 50%;
+	width: 55%;
 }
 
 .task-list th.status {
 	width: 20%;
+}
+
+.task-list td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .task-list tbody {
@@ -386,13 +392,20 @@ body::after {
 }
 
 .task-item input {
-	width: 150px;
+	width: 100%;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
 }
 
-.task-item .expanded-textbox {
+.task-item .truncate {
+	max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.expanded-textbox {
 	position: absolute;
 	z-index: 10;
 	background-color: #fffacd;
