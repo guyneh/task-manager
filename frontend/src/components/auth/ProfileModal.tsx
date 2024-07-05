@@ -13,6 +13,7 @@ interface ProfileModalProps {
 const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
     const { authState, signOut, updateUser } = useAuth();
     const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [name, setName] = useState(authState?.user?.name || '');
     const [avatar, setAvatar] = useState<File | null>(null);
     const [avatarUrl, setAvatarUrl] = useState<string>(authState?.user?.avatar || 'avatar.png');
@@ -57,6 +58,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
     const handleSave = async () => {
         try {
             setLoading(true);
+            setErrorMessage('');
             // If a new avatar is provided, upload it first
             if (avatar) {
                 const uploadData = await updateAvatar(authState?.user?.id || '', avatar);
@@ -75,6 +77,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
 
             onClose();
         } catch (error) {
+            setErrorMessage("Error updating profile information.");
             console.error("Error updating profile information:", error);
         } finally {
             setLoading(false);
@@ -83,8 +86,13 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
 
     // Log out the user and close the modal
     const handleLogout = () => {
-        signOut();
-        onClose();
+        try {
+            signOut();
+            onClose();
+        } catch (error) {
+            setErrorMessage("Error logging out.");
+            console.error("Error logging out:", error);
+        }
     };
 
     return (
@@ -132,6 +140,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
                     </div>
                 </label>
                 {loading && <Loading />}
+                {errorMessage && <p className="auth-error">{errorMessage}</p>}
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <button className="auth-button auth-button-red" onClick={handleLogout}>
                         Log Out

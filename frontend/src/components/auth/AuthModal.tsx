@@ -232,8 +232,8 @@ const Auth: React.FC<AuthProps> = ({ onClose }) => {
                                     required
                                 />
                             </label>
-                            {errorMessage && <p className="auth-error">{errorMessage}</p>}
                             {loading && <Loading />}
+                            {errorMessage && <p className="auth-error">{errorMessage}</p>}
                             <button className="auth-button" type="submit">
                                 Sign In
                             </button>
