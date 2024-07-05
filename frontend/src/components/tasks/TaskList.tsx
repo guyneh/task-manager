@@ -22,6 +22,13 @@ const TaskList: React.FC<TaskListProps> = ({ statusFilter }) => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
 
+    // Clear tasks when the user is not authenticated
+    useEffect(() => {
+        if (!authState.session) {
+            setTasks([]);
+        }
+    }, [authState]);
+
     // Fetch tasks when the component mounts
     useEffect(() => {
         const getTasks = async () => {
