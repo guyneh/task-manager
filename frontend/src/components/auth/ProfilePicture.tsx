@@ -16,7 +16,6 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({ avatarUrl, size = 60 })
             style={{
                 width: size,
                 height: size,
-                objectFit: 'cover',
             }}
         />
     );

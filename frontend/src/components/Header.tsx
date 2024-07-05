@@ -1,6 +1,6 @@
 // Header component with Task Manager title and Sign In button
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Auth from './auth/AuthModal';
 import { useAuth } from '../context/AuthContext';
 import ProfileModal from './auth/ProfileModal';
@@ -22,20 +22,6 @@ const Header: React.FC = () => {
     const [showAuth, setShowAuth] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
 
-    useEffect(() => {
-        console.log(authState);
-    })
-
-    // Render state for a logged in user
-    const renderLoggedIn = () => (
-        <div className="user-info">
-            <div className="profile-picture-container" onClick={() => setShowProfile(true)}>
-                <ProfilePicture avatarUrl={authState?.user?.avatar || "avatar.png"} />
-            </div>
-            <span>{authState?.user?.name}</span>
-        </div>
-    );
-
     return (
         <div className="header-container">
             <div className="date-container">
@@ -43,7 +29,11 @@ const Header: React.FC = () => {
             </div>
             <h1 className="header-title">Task Manager</h1>
             {authState.user ? (
-                renderLoggedIn()
+                <div className='profile-picture-container'>
+                    <div onClick={() => setShowProfile(true)}>
+                        <ProfilePicture avatarUrl={authState?.user?.avatar || "avatar.png"} />
+                    </div>
+                </div>
             ) : (
                 <button className="sign-in-button" onClick={() => setShowAuth(true)}>Sign In</button>
             )}
