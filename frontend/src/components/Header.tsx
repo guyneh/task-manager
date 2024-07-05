@@ -22,10 +22,6 @@ const Header: React.FC = () => {
     const [showAuth, setShowAuth] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
 
-    useEffect(() => {
-        console.log(authState)
-    })
-
     return (
         <div className="header-container">
             <div className="date-container">
@@ -37,7 +33,7 @@ const Header: React.FC = () => {
                     <div className="profile-picture-container">
                         <ProfilePicture avatarUrl={authState?.user?.avatar || "avatar.png"} />
                     </div>
-                    <span>{authState?.user?.name}</span>
+                    <span className='user-name'>{authState?.user?.name}</span>
                 </div>
             ) : (
                 <div className="auth-container">

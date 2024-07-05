@@ -48,13 +48,24 @@ export const authenticateUser = async (email, password) => {
     const user_id = data.user.id;
     const { data: userDetails, error: userError } = await supabase
         .from('users')
-        .select('name, created_at, avatar')
+        .select('name, avatar')
         .eq('user_id', user_id)
         .single();
 
     if (userError) throw userError;
 
-    return { ...data, user: { ...data.user, ...userDetails } };
+    // Merge name and avatar into user_metadata
+    return {
+        ...data,
+        user: {
+            ...data.user,
+            user_metadata: {
+                ...data.user.user_metadata,
+                name: userDetails.name,
+                avatar: userDetails.avatar
+            }
+        }
+    };
 };
 
 // Retrieves a user's avatar from the 'avatars' bucket and returns the URL
@@ -65,7 +76,7 @@ export const getAvatarUrl = async (user_id) => {
         .from('avatars')
         .list(`${user_id}`, { limit: 1 });
 
-    // If there is an error listing the files or the file doesn't exist, return the default avatar URL
+    // If there is an error listing the files or the file doesn't exist, return the default avatar URL in the storage bucket
     if (listError || fileList.length === 0) {
         return "https://zymglqnjkxnnfmfojyug.supabase.co/storage/v1/object/public/default_avatar/avatar.png?t=2024-07-04T21%3A30%3A39.738Z";
     }

@@ -44,6 +44,7 @@ body::before {
 	flex: 1;
 	font-size: 18px;
 	margin-left: 12px;
+	align-items: center;
 }
 
 .header-title {
@@ -52,11 +53,14 @@ body::before {
 	transform: translateX(-50%);
 	white-space: nowrap;
 	font-size: 40px;
+	align-items: center;
 }
 
 .auth-container,
 .profile-container {
 	display: flex;
+	flex-direction: column;
+	justify-content: center;
 	align-items: center;
 	height: 60px;
 }
@@ -79,9 +83,7 @@ body::before {
 }
 
 .profile-picture-container {
-	margin-bottom: 30px;
 	margin-right: 40px;
-	margin-top: 0;
 	display: flex;
 	align-items: center;
 }
@@ -91,6 +93,11 @@ body::before {
 	cursor: pointer;
 	width: 60px;
 	height: 60px;
+}
+
+.user-name {
+	margin-right: 40px;
+	margin-bottom: 40px;
 }
 
 .auth-modal {
