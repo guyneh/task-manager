@@ -30,7 +30,7 @@ body::before {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	margin-top: 44px;
+	margin-top: 43.5px;
 	position: relative;
 	width: 100%;
 	padding: 12px 0px;
@@ -54,6 +54,13 @@ body::before {
 	font-size: 40px;
 }
 
+.auth-container,
+.profile-container {
+	display: flex;
+	align-items: center;
+	height: 60px;
+}
+
 .sign-in-button {
 	background-color: transparent;
 	color: #000;
@@ -72,15 +79,18 @@ body::before {
 }
 
 .profile-picture-container {
-	margin-bottom: -2.5px;
+	margin-bottom: 30px;
 	margin-right: 40px;
-	margin-top: -20px;
+	margin-top: 0;
+	display: flex;
+	align-items: center;
 }
 
 .profile-picture {
 	border-radius: 50%;
-	vertical-align: middle;
 	cursor: pointer;
+	width: 60px;
+	height: 60px;
 }
 
 .auth-modal {
@@ -304,7 +314,7 @@ body::before {
 
 .task-list-container {
 	width: 85%;
-	margin-top: 56px;
+	margin-top: 54.5px;
 	padding-left: 150px;
 }
 
