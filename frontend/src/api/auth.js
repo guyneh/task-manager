@@ -53,7 +53,7 @@ export const updateProfile = async (userId, name, avatarPath) => {
 };
 
 // Uploads the user's avatar
-export const uploadAvatar = async (userId, avatar) => {
+export const updateAvatar = async (userId, avatar) => {
     const formData = new FormData();
     formData.append('user_id', userId);
     formData.append('avatar', avatar);
@@ -68,4 +68,18 @@ export const uploadAvatar = async (userId, avatar) => {
     }
 
     return response.json();
+};
+
+// Retrieve the user's avatar
+export const retrieveAvatar = async (userId) => {
+    const response = await fetch(`${API_URL}/retrieve-avatar/${userId}`, {
+        method: 'GET',
+    });
+
+    if (!response.ok) {
+        throw new Error('Error retrieving avatar');
+    }
+
+    const data = await response.json();
+    return data;
 };

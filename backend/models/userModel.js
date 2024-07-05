@@ -1,6 +1,7 @@
 // Connection to the database and user model functions (intermediary between database and controllers)
 
 import supabase from '../config/supabaseClient.js';
+import supabaseAdmin from '../config/supabaseAdmin.js';
 
 // Helper function to validate email
 export const isValidEmail = (email) => {
@@ -37,7 +38,7 @@ export const createUser = async (email, password) => {
     return data;
 };
 
-// Authenticate user
+// Signs in a user
 export const authenticateUser = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({
         email: email,
@@ -68,34 +69,40 @@ export const authenticateUser = async (email, password) => {
     };
 };
 
-// Retrieves a user's avatar from the 'avatars' bucket and returns the URL
-export const getAvatarUrl = async (user_id) => {
-    // Check if the file exists in the storage bucket
-    const { data: fileList, error: listError } = await supabase
-        .storage
-        .from('avatars')
-        .list(`${user_id}`, { limit: 1 });
+// Retrieves a user's avatar URL from the 'avatars' bucket
+export const getUserAvatar = async (userId) => {
+    try {
+        // List files in the user's avatar directory
+        const { data: fileList, error: listError } = await supabase
+            .storage
+            .from('avatars')
+            .list(`${userId}`, { limit: 1 });
 
-    // If there is an error listing the files or the file doesn't exist, return the default avatar URL in the storage bucket
-    if (listError || fileList.length === 0) {
-        return "https://zymglqnjkxnnfmfojyug.supabase.co/storage/v1/object/public/default_avatar/avatar.png?t=2024-07-04T21%3A30%3A39.738Z";
+        // If there's an error or no files are found, return null
+        if (listError || fileList.length === 0) {
+            return null;
+        }
+
+        // Generate a public URL for the first file found
+        const { data: publicURL, error: urlError } = supabase.storage
+            .from('avatars')
+            .getPublicUrl(`${userId}/${fileList[0].name}`);
+
+        if (urlError) throw urlError;
+
+        return publicURL;
+    } catch (error) {
+        console.error("Error retrieving avatar:", error);
+        return null;
     }
-
-    // Now attempt to download the avatar
-    const { data, error } = await supabase.storage.from('avatars').download(`${user_id}/avatar.png`);
-    if (error) throw error;
-
-    const avatarUrl = URL.createObjectURL(data);
-    return avatarUrl;
 };
 
 // Update user profile row
-export const updateUser = async (user_id, name, avatarPath) => {
-    console.log("Updating user profile with:", user_id, name, avatarPath);
+export const updateUser = async (userId, name, avatarPath) => {
     const { data, error } = await supabase
         .from('users')
         .update({ name: name, avatar: avatarPath })
-        .eq('user_id', user_id);
+        .eq('user_id', userId);
 
     if (error) {
         console.error("Error updating profile:", error);
@@ -103,4 +110,51 @@ export const updateUser = async (user_id, name, avatarPath) => {
     }
 
     return data;
+};
+
+// Delete the existing avatar from storage
+export const deleteExistingAvatar = async (userId) => {
+    const { data, error } = await supabaseAdmin
+        .storage
+        .from('avatars')
+        .remove([`${userId}/avatar.png`]);
+
+    if (error) throw error;
+};
+
+// Upload user avatar
+export const uploadUserAvatar = async (userId, avatar) => {
+    try {
+        // Delete the existing avatar
+        await deleteExistingAvatar(userId);
+
+        const { data, error } = await supabaseAdmin.storage
+            .from('avatars')
+            .upload(`${userId}/${avatar.name}`, avatar.data, {
+                contentType: avatar.mimetype,
+                upsert: true
+            });
+
+        if (error) throw error;
+
+        // Generate a public URL for the uploaded file
+        const { publicURL, error: urlError } = supabase.storage
+            .from('avatars')
+            .getPublicUrl(`${userId}/${avatar.name}`);
+
+        if (urlError) throw urlError;
+
+        // Update user's avatar URL in the database
+        const { data: updateData, error: updateError } = await supabase
+            .from('users')
+            .update({ avatar: publicURL })
+            .eq('user_id', userId);
+
+        if (updateError) throw updateError;
+
+        return publicURL;
+    } catch (error) {
+        console.error("Error uploading avatar:", error);
+        throw new Error('Error uploading avatar');
+    }
 };

@@ -1,6 +1,6 @@
 // Controllers for user authentication (intermediary between routes and models)
 
-import { isValidEmail, isValidAccessCode, createUser, authenticateUser, updateUser, getAvatarUrl } from '../models/userModel.js';
+import { isValidEmail, isValidAccessCode, createUser, authenticateUser, updateUser, uploadUserAvatar, getUserAvatar } from '../models/userModel.js';
 
 // Check Access Code Handler
 export const checkAccess = async (req, res) => {
@@ -48,8 +48,6 @@ export const signIn = async (req, res) => {
 
     try {
         const user = await authenticateUser(email, password);
-        const avatarUrl = await getAvatarUrl(user.user.id);
-        user.user.avatar = avatarUrl;
         res.status(200).json(user);
     } catch (error) {
         console.error("Error during sign-in process:", error);
@@ -59,10 +57,10 @@ export const signIn = async (req, res) => {
 
 // Update Profile Handler
 export const updateProfile = async (req, res) => {
-    const { userId, name, avatarPath } = req.body;
+    const { userId, name } = req.body;
 
     try {
-        await updateUser(userId, name, avatarPath);
+        await updateUser(userId, name);
         res.status(200).json({ message: 'Profile updated successfully' });
     } catch (error) {
         console.error("Error updating profile:", error);
@@ -80,16 +78,27 @@ export const uploadAvatar = async (req, res) => {
     }
 
     try {
-        const { data, error } = await supabase.storage.from('avatars').upload(`${user_id}/avatar.png`, avatar.data, {
-            contentType: avatar.mimetype,
-            upsert: true
-        });
-
-        if (error) throw error;
-
-        res.status(200).json({ path: data.path });
+        const publicURL = await uploadUserAvatar(user_id, avatar);
+        res.status(200).json({ path: publicURL });
     } catch (error) {
         console.error("Error uploading avatar:", error);
         res.status(500).json({ error: 'Error uploading avatar' });
+    }
+};
+
+// Retrieve user avatar
+export const retrieveAvatar = async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+        const avatarUrl = await getUserAvatar(userId);
+        if (avatarUrl === null) {
+            res.status(200).json({ avatarUrl: null });
+        } else {
+            res.status(200).json({ avatarUrl });
+        }
+    } catch (error) {
+        console.error("Error retrieving avatar:", error);
+        res.status(500).json({ error: 'Error retrieving avatar' });
     }
 };

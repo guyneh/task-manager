@@ -1,9 +1,9 @@
 // Settings modal for user profile
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import ProfilePicture from './ProfilePicture';
-import { updateProfile, uploadAvatar } from '../../api/auth';
+import { updateProfile, updateAvatar, retrieveAvatar } from '../../api/auth';
 
 interface ProfileModalProps {
     onClose: () => void;
@@ -13,6 +13,29 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
     const { authState, signOut, updateUser } = useAuth();
     const [name, setName] = useState(authState?.user?.name || '');
     const [avatar, setAvatar] = useState<File | null>(null);
+    const [avatarUrl, setAvatarUrl] = useState<string>(authState?.user?.avatar || 'avatar.png');
+
+    // Fetch the user's avatar when the component mounts, selecting the default avatar if none is found
+    useEffect(() => {
+        const fetchAvatar = async () => {
+            if (authState?.user?.id) {
+                console.log(authState)
+                try {
+                    const response = await retrieveAvatar(authState.user.id);
+                    const avatarUrl = response.avatarUrl.publicUrl;
+                    if (avatarUrl === null) {
+                        setAvatarUrl('avatar.png');
+                    } else {
+                        setAvatarUrl(avatarUrl);
+                        updateUser({ avatar: avatarUrl });
+                    }
+                } catch (error) {
+                    console.error("Error retrieving avatar:", error);
+                }
+            }
+        };
+        fetchAvatar();
+    }, [authState?.user?.id]);
 
     // Update the name state when the input changes
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,32 +48,24 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
             setAvatar(e.target.files[0]);
 
             // Update the authState with the new avatar URL for instant feedback
-            const newAvatarUrl = URL.createObjectURL(e.target.files[0]);
-            if (authState?.user) {
-                authState.user.avatar = newAvatarUrl;
-            }
+            setAvatarUrl(URL.createObjectURL(e.target.files[0]));
         }
     };
 
     // Handle profile update
     const handleSave = async () => {
         try {
-            let avatarPath = authState?.user?.avatar || '';
-
             // If a new avatar is provided, upload it first
             if (avatar) {
-                const uploadData = await uploadAvatar(authState?.user?.id || '', avatar);
-                avatarPath = uploadData.path;
+                const uploadData = await updateAvatar(authState?.user?.id || '', avatar);
+                setAvatarUrl(uploadData.path);
+                updateUser({ avatar: uploadData.path });
             }
 
-            const response = await updateProfile(authState?.user?.id || '', name, avatarPath);
+            // Update the database table and local auth state
+            await updateProfile(authState?.user?.id || '', name, avatarUrl);
+            updateUser({ name });
 
-            if (response.error) {
-                throw new Error(response.error);
-            }
-
-            // Update the local auth state and close the modal
-            updateUser({ name, avatar: avatarPath });
             onClose();
         } catch (error) {
             console.error("Error updating profile information:", error);
@@ -90,7 +105,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
                 <label className="auth-label">
                     Avatar:
                     <div style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
-                        <ProfilePicture avatarUrl={authState?.user?.avatar || "avatar.png"} size={100} />
+                        <ProfilePicture avatarUrl={avatarUrl || "avatar.png"} size={100} />
                         <input
                             type="file"
                             accept="image/*"
