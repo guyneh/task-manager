@@ -106,7 +106,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isEditing, setEditingTask, ha
                 </div>
             )}
             <tr className={`task-item ${isEditing ? 'task-item-editing' : ''}`} onClick={(e) => e.stopPropagation()}>
-                <td className="task-edit-button">
+                <td className="task-edit-button" style={{ position: 'relative', overflow: 'visible' }}>
                     {isEditing ? (
                         <div style={{ display: 'flex', marginLeft: '-64px', gap: '4px' }}>
                             <button onClick={handleDelete} disabled={task.task_id.startsWith('temp-')}>
