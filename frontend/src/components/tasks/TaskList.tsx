@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { FaPlus } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
-import { fetchTasks, createTask, updateTask, deleteTask } from '../../api/tasks';
+import { fetchTasks, updateTask, deleteTask, createTask } from '../../api/tasks';
 import TaskItem from './TaskItem';
 
-interface Task {
+export interface Task {
     task_id: string;
     title: string;
     description: string;
@@ -41,13 +41,16 @@ const TaskList: React.FC<TaskListProps> = ({ statusFilter }) => {
     }, [authState]);
 
     // Toggle the add task form
-    const handleAddTask = async () => {
-        const newTask: Partial<Task> = { title: '', description: '', status: 'To Do' };
-        const createdTask = await createTask(newTask, authState.session.access_token);
-        if (createdTask) {
-            setTasks([...tasks, createdTask]);
-            setEditingTaskId(createdTask.task_id);
-        }
+    const handleAddTask = () => {
+        // Create a temporary task with a unique ID
+        const newTask: Task = {
+            task_id: `temp-${Date.now()}`,
+            title: '',
+            description: '',
+            status: 'To Do',
+        };
+        setTasks([...tasks, newTask]);
+        setEditingTaskId(newTask.task_id);
     };
 
     // Handle task submission
@@ -56,14 +59,27 @@ const TaskList: React.FC<TaskListProps> = ({ statusFilter }) => {
             await deleteTask(updatedTask.task_id, authState.session.access_token);
             setTasks(tasks.filter(task => task.task_id !== updatedTask.task_id));
         } else {
-            await updateTask(updatedTask.task_id, updatedTask, authState.session.access_token);
-            setTasks(tasks.map(task => (task.task_id === updatedTask.task_id ? updatedTask : task)));
+            // If the task is a temporary task, create it
+            if (updatedTask.task_id.startsWith('temp-')) {
+                const createdTask = await createTask(updatedTask, authState.session.access_token);
+                // Assuming the API returns the created task as an object
+                if (createdTask) {
+                    setTasks(tasks.map(t => t.task_id === updatedTask.task_id ? createdTask : t));
+                }
+            } else {
+                // If the task is not temporary, update it
+                await updateTask(updatedTask.task_id, updatedTask, authState.session.access_token);
+                setTasks(tasks.map(task => task.task_id === updatedTask.task_id ? updatedTask : task));
+            }
         }
         setEditingTaskId(null);
     };
 
     // Filter tasks based on status
     const filteredTasks = tasks.filter(task => statusFilter === '' || task.status === statusFilter);
+
+    // Check if there is an editing task
+    const isEditing = filteredTasks.some(task => task.task_id === editingTaskId);
 
     return (
         <div>
@@ -84,9 +100,11 @@ const TaskList: React.FC<TaskListProps> = ({ statusFilter }) => {
                             isEditing={editingTaskId === task.task_id}
                             setEditingTask={setEditingTaskId}
                             handleTaskSubmit={handleTaskSubmit}
+                            setTasks={setTasks}
+                            tasks={tasks}
                         />
                     ))}
-                    {editingTaskId === null && (
+                    {!isEditing && (
                         <tr>
                             <td className="task-edit-button">
                                 <button className="plus-button" onClick={handleAddTask}>

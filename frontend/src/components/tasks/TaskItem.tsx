@@ -1,7 +1,10 @@
 // Represents an individual task item, displaying its title, description, and status in a table row
 
 import React, { useState } from 'react';
-import { FaPencilAlt, FaPlus, FaTimes, FaCheck, FaTrash } from 'react-icons/fa';
+import { FaPencilAlt, FaTimes, FaCheck, FaTrash } from 'react-icons/fa';
+import { createTask } from '../../api/tasks';
+import { useAuth } from '../../context/AuthContext';
+import { Task } from './TaskList';
 
 interface TaskItemProps {
     task: {
@@ -10,14 +13,16 @@ interface TaskItemProps {
         description: string;
         status: string;
     };
-    handleAddTask?: () => void;
     isEditing?: boolean;
     setEditingTask?: (id: string | null) => void;
     handleTaskSubmit?: (task: { task_id: string; title: string; description: string; status: string }) => void;
+    setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+    tasks: Task[];
 }
 
-const TaskItem: React.FC<TaskItemProps> = ({ task, handleAddTask, isEditing, setEditingTask, handleTaskSubmit }) => {
+const TaskItem: React.FC<TaskItemProps> = ({ task, isEditing, setEditingTask, handleTaskSubmit, setTasks, tasks }) => {
     // State for editable task
+    const { authState } = useAuth();
     const [editableTask, setEditableTask] = useState(task);
 
     // Handle editing the task
@@ -31,15 +36,36 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, handleAddTask, isEditing, set
     };
 
     // Handle saving the edit of a task
-    const isSaveDisabled = editableTask.title.trim() === '';
-    const handleSave = () => {
-        handleTaskSubmit?.(editableTask);
+    const isSaveDisabled = editableTask.title?.trim() === '';
+    const handleSave = async () => {
+        try {
+            if (task.task_id.startsWith('temp-')) {
+                const createdTask = await createTask(editableTask, authState.session.access_token);
+                if (createdTask) {
+                    setTasks(tasks.map(t => (t.task_id === task.task_id ? createdTask : t)));
+                    setEditableTask(createdTask);
+                } else {
+                    // Handle the case where createdTask is null
+                    console.error('Created task is null');
+                }
+            } else {
+                await handleTaskSubmit?.(editableTask);
+            }
+        } catch (error) {
+            console.error('Error saving task:', error);
+        } finally {
+            setEditingTask?.(null);
+        }
     };
 
     // Handle cancelling the edit of a task
     const handleCancel = () => {
-        setEditableTask(task);
-        setEditingTask?.(null);
+        if (task.task_id.startsWith('temp-')) {
+            setTasks(tasks.filter(t => t.task_id !== task.task_id));
+        } else {
+            setEditableTask(task);
+            setEditingTask?.(null);
+        }
     };
 
     // Handle deleting a task
@@ -50,13 +76,9 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, handleAddTask, isEditing, set
     return (
         <tr className={`task-item ${isEditing ? 'task-item-editing' : ''}`}>
             <td className="task-edit-button">
-                {task.title === '' && task.description === '' && task.status === '' ? (
-                    <button className="plus-button" onClick={handleAddTask}>
-                        <FaPlus size={22} />
-                    </button>
-                ) : isEditing ? (
+                {isEditing ? (
                     <div style={{ display: 'flex', marginLeft: '-64px', gap: '4px' }}>
-                        <button onClick={handleDelete}>
+                        <button onClick={handleDelete} disabled={task.task_id.startsWith('temp-')}>
                             <FaTrash size={20} />
                         </button>
                         <div style={{ borderLeft: '1px solid black', height: '22px' }}></div>

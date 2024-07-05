@@ -23,10 +23,11 @@ export const createTask = async (req, res) => {
     const { title, description, status } = req.body;
     const { data, error } = await supabase
         .from('tasks')
-        .insert([{ title, description, status, user_id }]);
+        .insert([{ title, description, status, user_id }])
+        .select();
 
     if (error) return res.status(500).json({ error });
-    res.status(201).json(data);
+    res.status(201).json(data[0]);
 };
 
 // Update an existing task in the database

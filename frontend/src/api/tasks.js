@@ -29,11 +29,22 @@ export const createTask = async (task, token) => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': token,
+            'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(task),
     });
-    return await response.json();
+    console.log(response)
+
+    if (!response.ok) {
+        const error = await response.json();
+        console.error('Error creating task:', error);
+        throw new Error('Failed to create task');
+    }
+
+    // Ensure the API returns the created task
+    const createdTask = await response.json();
+    console.log(createdTask)
+    return createdTask;
 };
 
 // Update a task
@@ -42,7 +53,7 @@ export const updateTask = async (id, task, token) => {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': token,
+            'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(task),
     });
@@ -54,7 +65,7 @@ export const deleteTask = async (id, token) => {
     await fetch(`${BASE_URL}/tasks/${id}`, {
         method: 'DELETE',
         headers: {
-            'Authorization': token,
+            'Authorization': `Bearer ${token}`,
         },
     });
 };
