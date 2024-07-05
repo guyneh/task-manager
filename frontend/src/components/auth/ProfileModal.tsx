@@ -23,8 +23,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
         const fetchAvatar = async () => {
             if (authState?.user?.id) {
                 try {
-                    const response = await retrieveAvatar(authState.user.id);
-                    const avatarUrl = response.avatarUrl.publicUrl;
+                    const avatarUrl = await retrieveAvatar(authState.user.id);
                     if (avatarUrl === null) {
                         setAvatarUrl('avatar.png');
                     } else {
