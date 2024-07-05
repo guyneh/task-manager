@@ -17,6 +17,7 @@ const Filter: React.FC<FilterProps> = ({ statusFilter, setStatusFilter }) => {
                 onChange={(e) => setStatusFilter(e.target.value)}
             >
                 <option value="">All</option>
+                <option value="" disabled>──────</option>
                 <option value="To Do">To Do</option>
                 <option value="In Progress">In Progress</option>
                 <option value="Done">Done</option>
