@@ -10,7 +10,10 @@ export const getTasks = async (req, res) => {
         .select('*')
         .eq('user_id', user_id);
 
-    if (error) return res.status(500).json({ error });
+    if (error) {
+        console.error('Error fetching tasks:', error);
+        return res.status(500).json({ error: 'Error fetching tasks' });
+    }
     res.status(200).json(data);
 };
 

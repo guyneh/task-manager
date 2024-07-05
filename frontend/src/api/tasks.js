@@ -12,6 +12,13 @@ export const fetchTasks = async (token) => {
             'Content-Type': 'application/json',
         },
     });
+
+    if (!response.ok) {
+        const error = await response.json();
+        console.error('Error fetching tasks:', error);
+        throw new Error('Failed to fetch tasks');
+    }
+
     const data = await response.json();
     return Array.isArray(data) ? data : [];
 };
