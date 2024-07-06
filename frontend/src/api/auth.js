@@ -103,7 +103,7 @@ export const retrieveAvatar = async (userId) => {
 
         // Return the avatar URL, or the default avatar if not found
         const data = await response.json();
-        return data.avatarUrl || '/avatar.png';
+        return data.avatarUrl.publicUrl || '/avatar.png';
     } catch (error) {
         return '/avatar.png';
     }
