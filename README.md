@@ -3,6 +3,7 @@ A task manager "to-do list" app, built with React using Typescript and hosted on
 
 ## Project Structure:
 ### backend/
+
 `config/`:
 -   Files configure the connection to the Supabase database using keys from the .env file (not shared publicly)
 -   One file for admin key, one for regular client key
@@ -26,6 +27,7 @@ A task manager "to-do list" app, built with React using Typescript and hosted on
 -   (RLS policies implemented but not shown here)
 
 ### frontend/src/
+
 `index.tsx`:
 -   Renders app component into the DOM
 -   Wrapped by AuthProvider to consistently store user session and details
