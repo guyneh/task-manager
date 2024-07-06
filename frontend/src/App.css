@@ -378,9 +378,9 @@ body::after {
 }
 
 .task-list td {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .task-list tbody {
@@ -400,9 +400,9 @@ body::after {
 
 .task-item .truncate {
 	max-width: 150px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .expanded-textbox {
@@ -467,9 +467,75 @@ select {
 	background-color: rgba(0, 0, 0, 0.1);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 800px) {
+	body {
+		font-size: 0.9em;
+	}
+
 	.header-container {
-		margin-top: 20px;
+		margin-top: 52px;
+		padding: 6px 0px;
+	}
+
+	.date-container {
+		font-size: 14px;
+		margin-left: 6px;
+		margin-top: 16px;
+		word-break: break-word;
+	}
+
+	.profile-container {
+		margin-top: -4px;
+	}
+
+	.header-title {
+		font-size: 28px;
+	}
+
+	.filter-container {
+		top: 84px;
+	}
+
+	.task-list-container {
+		margin-top: 71px;
+	}
+
+	.sign-in-button {
+		font-size: 16px;
+		margin-right: 30px;
+	}
+
+	.task-list th.title,
+	.task-list th.description,
+	.task-list th.status {
+		font-size: 16px;
+	}
+
+	.auth-label,
+	.auth-input,
+	.auth-button,
+	.auth-button-red,
+	.auth-button-green,
+	.auth-tab,
+	.access-check-button,
+	.toggle-button,
+	.filter-container label,
+	.filter-container select,
+	.task-item,
+	.task-edit-button button {
+		font-size: 0.9em;
+	}
+}
+
+@media (max-width: 600px) {
+
+	body::before,
+	body::after {
+		left: 150px;
+	}
+
+	.header-container {
+		margin-top: 52px;
 		padding: 6px 0px;
 	}
 
@@ -481,11 +547,29 @@ select {
 
 	.header-title {
 		font-size: 28px;
+		margin-left: 60px;
+	}
+
+	.profile-container {
+		margin-right: -70px;
 	}
 
 	.sign-in-button {
 		font-size: 16px;
-		margin-right: 30px;
+		margin-right: -40px;
+		margin-bottom: 6px;
+	}
+
+	.filter-container {
+		margin-left: -6px;
+	}
+
+	.task-list-container {
+		padding-left: 100px;
+	}
+
+	.task-item {
+		border-bottom: 7.5px solid transparent;
 	}
 
 	.task-list th.title,

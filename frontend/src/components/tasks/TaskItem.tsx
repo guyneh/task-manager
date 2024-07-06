@@ -76,8 +76,22 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isEditing, setEditingTask, ha
 
     // Handle expanding and collapsing the text
     const handleExpandText = (field: string, value: string, top: number, left: number) => {
-        setShowFullText({ field, value, top: top + window.scrollY, left });
+        const viewportHeight = window.innerHeight;
+        const viewportWidth = window.innerWidth;
+        const expandedBoxHeight = 100;              // Approximate height of the expanded textbox
+        const expandedBoxWidth = 200;               // Approximate width of the expanded textbox
+
+        const adjustedTop = top + window.scrollY + expandedBoxHeight > viewportHeight
+            ? top + window.scrollY - expandedBoxHeight
+            : top + window.scrollY;
+
+        const adjustedLeft = left + expandedBoxWidth > viewportWidth
+            ? left - expandedBoxWidth
+            : left;
+
+        setShowFullText({ field, value, top: adjustedTop, left: adjustedLeft });
     };
+
     const handleCollapseText = () => {
         setShowFullText({ field: '', value: '', top: 0, left: 0 });
     };
@@ -137,11 +151,6 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isEditing, setEditingTask, ha
                             onChange={handleChange}
                             className="truncate"
                             autoFocus
-                            onClick={(e) => {
-                                const rect = (e.target as HTMLElement).getBoundingClientRect();
-                                handleExpandText('title', editableTask.title, rect.top, rect.left);
-                                e.stopPropagation();
-                            }}
                         />
                     ) : (
                         <span onClick={(e) => {
@@ -160,11 +169,6 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isEditing, setEditingTask, ha
                             value={editableTask.description}
                             onChange={handleChange}
                             className="truncate"
-                            onClick={(e) => {
-                                const rect = (e.target as HTMLElement).getBoundingClientRect();
-                                handleExpandText('description', editableTask.description, rect.top, rect.left);
-                                e.stopPropagation();
-                            }}
                         />
                     ) : (
                         <span onClick={(e) => {
