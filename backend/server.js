@@ -12,7 +12,7 @@ dotenv.config();
 
 // Set the port for the server
 const app = express();
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 3000;
 
 // Middleware for parsing JSON data in the request body
 app.use(express.json());
@@ -20,7 +20,7 @@ app.use(fileUpload());
 
 // CORS condiguration (allow cookies to be sent with requests)
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: process.env.FRONTEND_URL,
     credentials: true,
     optionsSuccessStatus: 200
 }));
@@ -37,3 +37,5 @@ app.use((err, req, res, next) => {
 
 // Start the server and listen on the specified port
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+export default app;
