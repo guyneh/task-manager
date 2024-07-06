@@ -1,5 +1,10 @@
 # Task Manager
-A task manager "to-do list" app, built with React using Typescript and hosted on Supabase via PostgreSQL 
+A task manager "to-do list" app, built with React using Typescript and hosted on Supabase via PostgreSQL
+-   PostgreSQL database with RLS policies and authentication enabled
+-   Express.js backend using routes and controllers model (https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/routes)
+-   Node.js and React frontend written mainly in Typescript
+
+-   ACCESS CODE (for Sign Up): Q0MB9Y
 
 ## Project Structure:
 ### backend/
@@ -51,19 +56,25 @@ A task manager "to-do list" app, built with React using Typescript and hosted on
 
 ## Demo:
 ### Live Demo:
-https://guyneh.github.io/maths-test/
+https://guyneh.github.io/task-manager/
 
 ### Run locally:
 1.  Clone the repository in your terminal:
-    -   git clone https://github.com/guyneh/maths-test.git
+    -   git clone https://github.com/guyneh/task-manager.git
 
 2. Navigate to the project directory:
     -   cd maths-test
 
-3. Install dependencies:
-    -   npm install
+3. Open up two terminals in your IDE (e.g. Split Terminal on VSCode)
 
-4. Start development server:
+4. In the left terminal, navigate to the backend, install dependencies and start the server
+    -   cd backend
+    -   npm install
+    -   npm start OR node server.js
+
+4. In the right terminal, navigate to the frontend, install dependencies and start the development server
+    -   cd frontend
+    -   npm install
     -   npm start
 
 5. Open your browser and go to http://localhost:3000 to view the app
