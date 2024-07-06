@@ -89,17 +89,22 @@ export const updateAvatar = async (userId, avatar) => {
 
 // Retrieve the user's avatar
 export const retrieveAvatar = async (userId) => {
-    const response = await fetch(`${API_URL}/retrieve-avatar/${userId}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
+    try {
+        const response = await fetch(`${API_URL}/retrieve-avatar/${userId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
 
-    if (!response.ok) {
-        throw new Error('Error retrieving avatar');
+        if (!response.ok) {
+            throw new Error('Error retrieving avatar');
+        }
+
+        // Return the avatar URL, or the default avatar if not found
+        const data = await response.json();
+        return data.avatarUrl || '/avatar.png';
+    } catch (error) {
+        return '/avatar.png';
     }
-
-    const data = await response.json();
-    return data.avatarUrl.publicUrl;
 };

@@ -94,23 +94,38 @@ const Auth: React.FC<AuthProps> = ({ onClose }) => {
                     setLoading(false);
                     return;
                 }
+
+                // Automatically sign in the user after successful sign up
+                const signInResponse = await signIn(formData);
+                if (signInResponse.error) {
+                    setErrorMessage(signInResponse.error);
+                    setLoading(false);
+                    return;
+                }
+
+                // Fetch avatar URL, default to /avatar.png if error
+                const avatarUrl = await retrieveAvatar(signInResponse.user.id).catch(() => '/avatar.png');
+
+                // Update auth context with user and token
+                const { user } = signInResponse;
+                const { id, email, created_at, user_metadata: { name } } = user;
+                contextSignIn({ id, email, created_at, name, avatar: avatarUrl || '/avatar.png' }, signInResponse.session);
                 onClose();
             } else {
                 const response = await signIn(formData);
-
                 if (response.error) {
                     setErrorMessage(response.error);
                     setLoading(false);
                     return;
                 }
 
-                // Fetch avatar URL
-                const avatarUrl = await retrieveAvatar(response.user.id);
+                // Fetch avatar URL, default to /avatar.png if error
+                const avatarUrl = await retrieveAvatar(response.user.id).catch(() => '/avatar.png');
 
                 // Update auth context with user and token
                 const { user } = response;
                 const { id, email, created_at, user_metadata: { name } } = user;
-                contextSignIn({ id, email, created_at, name, avatar: avatarUrl }, response.session);
+                contextSignIn({ id, email, created_at, name, avatar: avatarUrl || '/avatar.png' }, response.session);
                 onClose();
             }
         } catch (error) {
