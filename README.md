@@ -1,5 +1,5 @@
 # Task Manager
-A task manager "to-do list" app, built with React using Typescript and hosted on Supabase via PostgreSQL
+A task manager "to-do list" app, built with React using Typescript and hosted on Supabase via PostgreSQL 
 
 ## Project Structure:
 ### backend/
