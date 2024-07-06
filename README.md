@@ -2,8 +2,9 @@
 A task manager "to-do list" app, built with React using Typescript and hosted on Supabase via PostgreSQL 
 
 ## Project Structure:
+.
 
-### backend/,.
+### backend/
 
 `config/`:
 -   Files configure the connection to the Supabase database using keys from the .env file (not shared publicly)
