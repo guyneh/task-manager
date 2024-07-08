@@ -14,16 +14,16 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware for parsing JSON data in the request body
-app.use(express.json());
-app.use(fileUpload());
-
 // CORS condiguration (allow cookies to be sent with requests)
 app.use(cors({
     origin: process.env.FRONTEND_URL,
     credentials: true,
     optionsSuccessStatus: 200
 }));
+
+// Middleware for parsing JSON data in the request body
+app.use(express.json());
+app.use(fileUpload());
 
 app.use((req, res, next) => {
     console.log(`Received request: ${req.method} ${req.url}`);
