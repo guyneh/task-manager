@@ -1,7 +1,7 @@
 // Frontend functions to interact with the backend API for tasks
 
 // Backend URL
-const BASE_URL = "https://task-manager-nu-black.vercel.app/api";
+const BASE_URL = process.env.REACT_APP_API_URL + "/api";
 
 // Fetch all tasks for the current user via the token
 export const fetchTasks = async (token) => {

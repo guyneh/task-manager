@@ -1,7 +1,7 @@
 // Frontend functions to interact with the backend API for auth
 
 // Backend URL
-const API_URL = "https://task-manager-nu-black.vercel.app/auth";
+const API_URL = process.env.REACT_APP_API_URL + "/auth";
 
 // Creates a new user
 export const signUp = async (formData) => {
