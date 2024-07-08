@@ -1,8 +1,9 @@
 # Task Manager
-A task manager "to-do list" app, built with a ReactJS frontend and a NodeJS backend using Typescript and hosted on Supabase via PostgreSQL
--   PostgreSQL database with RLS policies and authentication enabled
--   Express.js backend using routes and controllers model (https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/routes)
--   Node.js and React frontend written mainly in Typescript
+A task manager "to-do list" app, allowing a user to sign up and log in to create, read, update and delete tasks online
+-   Database: PostgreSQL hosted on Supabase with RLS and authentication configured
+-   Backend: NodeJS with Express.js using routes and controllers model (https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/routes)
+-   Frontend: ReactJS written mainly in Typescript
+-   Deployment: Hosted on Vercel (separate projects for frontend and backend)
 
 -   ACCESS CODE (for Sign Up): Q0MB9Y
 
