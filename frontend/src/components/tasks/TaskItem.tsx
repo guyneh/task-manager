@@ -60,6 +60,9 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isEditing, setEditingTask, ha
 
     // Handle cancelling the edit of a task
     const handleCancel = () => {
+        if (task.task_id.startsWith('temp-')) {
+            setTasks(tasks.filter(t => t.task_id !== task.task_id));
+        }
         setEditableTask(task);
         setEditingTask?.(null);
     };
