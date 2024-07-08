@@ -1,6 +1,6 @@
 // Settings modal for user profile
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import ProfilePicture from './ProfilePicture';
 import { updateProfile, updateAvatar, retrieveAvatar } from '../../api/auth';
@@ -18,6 +18,9 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
     const [avatar, setAvatar] = useState<File | null>(null);
     const [avatarUrl, setAvatarUrl] = useState<string>(authState?.user?.avatar || 'avatar.png');
 
+    // Prevents updateUser from being recreated on every render
+    const memoizedUpdateUser = useCallback(updateUser, [updateUser]);
+
     // Fetch the user's avatar when the component mounts, selecting the default avatar if none is found
     useEffect(() => {
         const fetchAvatar = async () => {
@@ -28,7 +31,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
                         setAvatarUrl('avatar.png');
                     } else {
                         setAvatarUrl(avatarUrl);
-                        updateUser({ avatar: avatarUrl });
+                        memoizedUpdateUser({ avatar: avatarUrl });
                     }
                 } catch (error) {
                     console.error("Error retrieving avatar:", error);
@@ -36,7 +39,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
             }
         };
         fetchAvatar();
-    }, [authState?.user?.id]);
+    }, [authState?.user?.id, memoizedUpdateUser]);
 
     // Update the name state when the input changes
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {

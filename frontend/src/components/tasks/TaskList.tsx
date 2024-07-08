@@ -27,7 +27,7 @@ const TaskList: React.FC<TaskListProps> = ({ statusFilter }) => {
         if (!authState.session) {
             setTasks([]);
         }
-    }, [authState]);
+    }, [authState.session]);
 
     // Fetch tasks when the user is authenticated
     useEffect(() => {
@@ -53,7 +53,7 @@ const TaskList: React.FC<TaskListProps> = ({ statusFilter }) => {
             }
         };
         getTasks();
-    }, [authState, refreshAccessToken]);
+    }, [authState.session, refreshAccessToken]);
 
     // Toggle the add task form
     const handleAddTask = () => {
