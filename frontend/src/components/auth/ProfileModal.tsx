@@ -36,7 +36,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
             }
         };
         fetchAvatar();
-    }, [authState?.user?.id, updateUser]);
+    }, [authState?.user?.id]);
 
     // Update the name state when the input changes
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
