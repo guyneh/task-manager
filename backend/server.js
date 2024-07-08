@@ -30,6 +30,11 @@ app.use((req, res, next) => {
     next();
 });
 
+// Health check route
+app.get('/', (req, res) => {
+    res.send('Backend is running correctly.');
+});
+
 // Routes for API endpoints
 app.use('/api', taskRoutes);
 app.use('/auth', authRoutes);
