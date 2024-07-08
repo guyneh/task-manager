@@ -1,8 +1,8 @@
 # Task Manager
-A task manager "to-do list" app, allowing a user to sign up and log in to create, read, update and delete tasks online
+A task manager "to-do list" app, allowing a user to sign up and log in to create, read, update and delete tasks online (CRUD)
 -   Database: PostgreSQL hosted on Supabase with RLS and authentication configured
--   Backend: NodeJS with Express.js using routes and controllers model (https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/routes)
--   Frontend: ReactJS written mainly in Typescript
+-   Backend: NodeJS with Express.js using models-routes-controllers model (https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/routes)
+-   Frontend: ReactJS written mainly in Typescript, with CSS styling
 -   Deployment: Hosted on Vercel (separate projects for frontend and backend)
 
 -   ACCESS CODE (for Sign Up): Q0MB9Y
