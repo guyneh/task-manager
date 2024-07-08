@@ -29,31 +29,31 @@ const TaskList: React.FC<TaskListProps> = ({ statusFilter }) => {
         }
     }, [authState]);
 
-    // Helper function to fetch tasks with token refresh
-    const getTasksWithTokenRefresh = async () => {
-        try {
-            const tasks = await fetchTasks(authState.session.access_token);
-            setTasks(tasks);
-        } catch (error) {
-            if (error instanceof Error && error.message === 'Failed to fetch tasks') {
-                await refreshAccessToken();
+    // Fetch tasks when the user is authenticated
+    useEffect(() => {
+        // Helper function to fetch tasks with token refresh
+        const getTasksWithTokenRefresh = async () => {
+            try {
                 const tasks = await fetchTasks(authState.session.access_token);
                 setTasks(tasks);
-            } else {
-                console.error('Error fetching tasks:', error);
+            } catch (error) {
+                if (error instanceof Error && error.message === 'Failed to fetch tasks') {
+                    await refreshAccessToken();
+                    const tasks = await fetchTasks(authState.session.access_token);
+                    setTasks(tasks);
+                } else {
+                    console.error('Error fetching tasks:', error);
+                }
             }
-        }
-    };
+        };
 
-    // Fetch tasks when the component mounts
-    useEffect(() => {
         const getTasks = async () => {
             if (authState.session) {
                 await getTasksWithTokenRefresh();
             }
         };
         getTasks();
-    }, [authState]);
+    }, [authState, refreshAccessToken]);
 
     // Toggle the add task form
     const handleAddTask = () => {
