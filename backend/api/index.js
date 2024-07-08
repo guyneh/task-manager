@@ -4,8 +4,8 @@ import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import fileUpload from 'express-fileupload';
-import taskRoutes from './routes/taskRoutes.js';
-import authRoutes from './routes/authRoutes.js';
+import taskRoutes from '../routes/taskRoutes.js';
+import authRoutes from '../routes/authRoutes.js';
 
 // Load env variables from .env file
 dotenv.config();
