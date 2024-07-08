@@ -70,20 +70,31 @@ const TaskList: React.FC<TaskListProps> = ({ statusFilter }) => {
 
     // Handle task submission
     const handleTaskSubmit = async (updatedTask: Task) => {
-        if (updatedTask.title === '' && updatedTask.description === '' && updatedTask.status === '') {
-            await deleteTask(updatedTask.task_id, authState.session.access_token);
-            setTasks(tasks.filter(task => task.task_id !== updatedTask.task_id));
-        } else {
-            // If the task is a temporary task, create it
-            if (updatedTask.task_id.startsWith('temp-')) {
-                const createdTask = await createTask(updatedTask, authState.session.access_token);
-                // Assuming the API returns the created task as an object
-                if (createdTask) {
-                    setTasks(tasks.map(t => t.task_id === updatedTask.task_id ? createdTask : t));
-                }
+        // Only send to database if user is authenticated
+        console.log(authState)
+        if (authState.session) {
+            if (updatedTask.title === '' && updatedTask.description === '' && updatedTask.status === '') {
+                await deleteTask(updatedTask.task_id, authState.session.access_token);
+                setTasks(tasks.filter(task => task.task_id !== updatedTask.task_id));
             } else {
-                // If the task is not temporary, update it
-                await updateTask(updatedTask.task_id, updatedTask, authState.session.access_token);
+                // If the task is a temporary task, create it
+                if (updatedTask.task_id.startsWith('temp-')) {
+                    const createdTask = await createTask(updatedTask, authState.session.access_token);
+                    // Assuming the API returns the created task as an object
+                    if (createdTask) {
+                        setTasks(tasks.map(t => t.task_id === updatedTask.task_id ? createdTask : t));
+                    }
+                } else {
+                    // If the task is not temporary, update it
+                    await updateTask(updatedTask.task_id, updatedTask, authState.session.access_token);
+                    setTasks(tasks.map(task => task.task_id === updatedTask.task_id ? updatedTask : task));
+                }
+            }
+        } else {
+            // Handle tasks locally when the user is not logged in
+            if (updatedTask.title === '' && updatedTask.description === '' && updatedTask.status === '') {
+                setTasks(tasks.filter(task => task.task_id !== updatedTask.task_id));
+            } else {
                 setTasks(tasks.map(task => task.task_id === updatedTask.task_id ? updatedTask : task));
             }
         }

@@ -33,7 +33,6 @@ export const createTask = async (task, token) => {
         },
         body: JSON.stringify(task),
     });
-    console.log(response)
 
     if (!response.ok) {
         const error = await response.json();
@@ -43,7 +42,6 @@ export const createTask = async (task, token) => {
 
     // Ensure the API returns the created task
     const createdTask = await response.json();
-    console.log(createdTask)
     return createdTask;
 };
 

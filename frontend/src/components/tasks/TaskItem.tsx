@@ -40,13 +40,12 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isEditing, setEditingTask, ha
     const isSaveDisabled = editableTask.title?.trim() === '';
     const handleSave = async () => {
         try {
-            if (task.task_id.startsWith('temp-')) {
+            if (authState.session && task.task_id.startsWith('temp-')) {
                 const createdTask = await createTask(editableTask, authState.session.access_token);
                 if (createdTask) {
                     setTasks(tasks.map(t => (t.task_id === task.task_id ? createdTask : t)));
                     setEditableTask(createdTask);
                 } else {
-                    // Handle the case where createdTask is null
                     console.error('Created task is null');
                 }
             } else {
@@ -61,12 +60,8 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isEditing, setEditingTask, ha
 
     // Handle cancelling the edit of a task
     const handleCancel = () => {
-        if (task.task_id.startsWith('temp-')) {
-            setTasks(tasks.filter(t => t.task_id !== task.task_id));
-        } else {
-            setEditableTask(task);
-            setEditingTask?.(null);
-        }
+        setEditableTask(task);
+        setEditingTask?.(null);
     };
 
     // Handle deleting a task
@@ -123,7 +118,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isEditing, setEditingTask, ha
                 <td className="task-edit-button" style={{ position: 'relative', overflow: 'visible' }}>
                     {isEditing ? (
                         <div style={{ display: 'flex', marginLeft: '-64px', gap: '4px' }}>
-                            <button onClick={handleDelete} disabled={task.task_id.startsWith('temp-')}>
+                            <button onClick={handleDelete} disabled={authState.session ? task.task_id.startsWith('temp-') : false}>
                                 <FaTrash size={20} />
                             </button>
                             <div style={{ borderLeft: '1px solid black', height: '22px' }}></div>
