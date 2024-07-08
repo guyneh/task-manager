@@ -531,7 +531,7 @@ select {
 
 	body::before,
 	body::after {
-		left: 150px;
+		left: 130px;
 	}
 
 	.header-container {
@@ -540,14 +540,14 @@ select {
 	}
 
 	.date-container {
-		font-size: 14px;
+		font-size: 12px;
 		margin-left: 6px;
 		word-break: break-word;
 	}
 
 	.header-title {
 		font-size: 28px;
-		margin-left: 60px;
+		margin-left: 40px;
 	}
 
 	.profile-container {
@@ -555,17 +555,19 @@ select {
 	}
 
 	.sign-in-button {
-		font-size: 16px;
-		margin-right: -40px;
-		margin-bottom: 6px;
+		font-size: 14px;
+		margin-right: -26px;
+		margin-bottom: 4px;
 	}
 
 	.filter-container {
-		margin-left: -6px;
+		display: flex;
+		flex-direction: column;
 	}
 
 	.task-list-container {
-		padding-left: 100px;
+		padding-left: 70px;
+		margin-top: 67px;
 	}
 
 	.task-item {
